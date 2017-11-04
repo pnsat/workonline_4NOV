@@ -1,132 +1,92 @@
 /*
- * Decompiled with CFR 0_110.
+ * Copyright 2011 Ytai Ben-Tsvi. All rights reserved.
+ *  
  * 
- * Could not load the following classes:
- *  java.io.IOException
- *  java.lang.AssertionError
- *  java.lang.InterruptedException
+ * Redistribution and use in source and binary forms, with or without modification, are
+ * permitted provided that the following conditions are met:
+ * 
+ *    1. Redistributions of source code must retain the above copyright notice, this list of
+ *       conditions and the following disclaimer.
+ * 
+ *    2. Redistributions in binary form must reproduce the above copyright notice, this list
+ *       of conditions and the following disclaimer in the documentation and/or other materials
+ *       provided with the distribution.
+ * 
+ * THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+ * FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL ARSHAN POURSOHI OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+ * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * 
+ * The views and conclusions contained in the software and documentation are those of the
+ * authors and should not be interpreted as representing official policies, either expressed
+ * or implied.
  */
 package ioio.lib.impl;
 
 import ioio.lib.api.DigitalInput;
 import ioio.lib.api.exception.ConnectionLostException;
-import ioio.lib.impl.AbstractPin;
-import ioio.lib.impl.AbstractResource;
-import ioio.lib.impl.IOIOImpl;
-import ioio.lib.impl.IOIOProtocol;
-import ioio.lib.impl.IncomingState;
+import ioio.lib.impl.IncomingState.InputPinListener;
+
 import java.io.IOException;
 
-class DigitalInputImpl
-extends AbstractPin
-implements DigitalInput,
-IncomingState.InputPinListener {
-    static final /* synthetic */ boolean $assertionsDisabled;
-    private boolean valid_ = false;
-    private boolean value_;
+class DigitalInputImpl extends AbstractPin implements DigitalInput,
+		InputPinListener {
+	private boolean value_;
+	private boolean valid_ = false;
 
-    /*
-     * Enabled aggressive block sorting
-     */
-    static {
-        boolean bl = !DigitalInputImpl.class.desiredAssertionStatus();
-        $assertionsDisabled = bl;
-    }
+	DigitalInputImpl(IOIOImpl ioio, int pin) throws ConnectionLostException {
+		super(ioio, pin);
+	}
 
-    DigitalInputImpl(IOIOImpl iOIOImpl, int n) throws ConnectionLostException {
-        super(iOIOImpl, n);
-    }
+	@Override
+	synchronized public void setValue(int value) {
+		// Log.v("DigitalInputImpl", "Pin " + pinNum_ + " value is " + value);
+		assert (value == 0 || value == 1);
+		value_ = (value == 1);
+		if (!valid_) {
+			valid_ = true;
+		}
+		notifyAll();
+	}
 
-    /*
-     * Enabled aggressive block sorting
-     * Enabled unnecessary exception pruning
-     * Enabled aggressive exception aggregation
-     * Converted monitor instructions to comments
-     * Lifted jumps to return sites
-     */
-    @Override
-    public void close() {
-        DigitalInputImpl digitalInputImpl = this;
-        // MONITORENTER : digitalInputImpl
-        super.close();
-        try {
-            this.ioio_.protocol_.setChangeNotify(this.pinNum_, false);
-            // MONITOREXIT : digitalInputImpl
-            return;
-        }
-        catch (IOException var2_2) {
-            return;
-        }
-    }
+	@Override
+	synchronized public void waitForValue(boolean value)
+			throws InterruptedException, ConnectionLostException {
+		checkState();
+		while ((!valid_ || value_ != value) && state_ != State.DISCONNECTED) {
+			wait();
+		}
+		checkState();
+	}
 
-    @Override
-    public void disconnected() {
-        DigitalInputImpl digitalInputImpl = this;
-        synchronized (digitalInputImpl) {
-            super.disconnected();
-            this.notifyAll();
-            return;
-        }
-    }
+	@Override
+	synchronized public void close() {
+		super.close();
+		try {
+			ioio_.protocol_.setChangeNotify(pinNum_, false);
+		} catch (IOException e) {
+		}
+	}
 
-    /*
-     * Enabled aggressive block sorting
-     * Enabled unnecessary exception pruning
-     * Enabled aggressive exception aggregation
-     */
-    @Override
-    public boolean read() throws InterruptedException, ConnectionLostException {
-        DigitalInputImpl digitalInputImpl = this;
-        synchronized (digitalInputImpl) {
-            this.checkState();
-            do {
-                if (this.valid_ || this.state_ == State.DISCONNECTED) {
-                    this.checkState();
-                    return this.value_;
-                }
-                this.wait();
-            } while (true);
-        }
-    }
+	@Override
+	synchronized public boolean read() throws InterruptedException,
+			ConnectionLostException {
+		checkState();
+		while (!valid_ && state_ != State.DISCONNECTED) {
+			wait();
+		}
+		checkState();
+		return value_;
+	}
 
-    /*
-     * Enabled aggressive block sorting
-     * Enabled unnecessary exception pruning
-     * Enabled aggressive exception aggregation
-     */
-    @Override
-    public void setValue(int n) {
-        int n2 = 1;
-        void var4_3 = this;
-        synchronized (var4_3) {
-            if (!$assertionsDisabled && n != 0 && n != n2) {
-                throw new AssertionError();
-            }
-            if (n != n2) {
-                n2 = 0;
-            }
-            this.value_ = n2;
-            if (!this.valid_) {
-                this.valid_ = true;
-            }
-            this.notifyAll();
-            return;
-        }
-    }
-
-    @Override
-    public void waitForValue(boolean bl) throws InterruptedException, ConnectionLostException {
-        void var3_2 = this;
-        synchronized (var3_2) {
-            this.checkState();
-            do {
-                if (this.valid_ && this.value_ == bl || this.state_ == State.DISCONNECTED) {
-                    this.checkState();
-                    return;
-                }
-                this.wait();
-            } while (true);
-        }
-    }
+	@Override
+	public synchronized void disconnected() {
+		super.disconnected();
+		notifyAll();
+	}
 }
-

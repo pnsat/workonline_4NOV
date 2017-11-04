@@ -1,54 +1,56 @@
 /*
- * Decompiled with CFR 0_110.
+ * Copyright 2011 Ytai Ben-Tsvi. All rights reserved.
+ *  
  * 
- * Could not load the following classes:
- *  java.io.IOException
- *  java.lang.Exception
+ * Redistribution and use in source and binary forms, with or without modification, are
+ * permitted provided that the following conditions are met:
+ * 
+ *    1. Redistributions of source code must retain the above copyright notice, this list of
+ *       conditions and the following disclaimer.
+ * 
+ *    2. Redistributions in binary form must reproduce the above copyright notice, this list
+ *       of conditions and the following disclaimer in the documentation and/or other materials
+ *       provided with the distribution.
+ * 
+ * THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+ * FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL ARSHAN POURSOHI OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+ * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * 
+ * The views and conclusions contained in the software and documentation are those of the
+ * authors and should not be interpreted as representing official policies, either expressed
+ * or implied.
  */
 package ioio.lib.impl;
 
 import ioio.lib.api.DigitalOutput;
 import ioio.lib.api.exception.ConnectionLostException;
-import ioio.lib.impl.AbstractPin;
-import ioio.lib.impl.IOIOImpl;
-import ioio.lib.impl.IOIOProtocol;
+
 import java.io.IOException;
 
-class DigitalOutputImpl
-extends AbstractPin
-implements DigitalOutput {
-    boolean value_;
+class DigitalOutputImpl extends AbstractPin implements DigitalOutput {
+	boolean value_;
 
-    DigitalOutputImpl(IOIOImpl iOIOImpl, int n, boolean bl) throws ConnectionLostException {
-        super(iOIOImpl, n);
-        this.value_ = bl;
-    }
+	DigitalOutputImpl(IOIOImpl ioio, int pin, boolean startValue) throws ConnectionLostException {
+		super(ioio, pin);
+		value_ = startValue;
+	}
 
-    /*
-     * Unable to fully structure code
-     * Enabled aggressive block sorting
-     * Enabled unnecessary exception pruning
-     * Enabled aggressive exception aggregation
-     * Converted monitor instructions to comments
-     * Lifted jumps to return sites
-     */
-    @Override
-    public void write(boolean var1) throws ConnectionLostException {
-        var5_2 = this;
-        // MONITORENTER : var5_2
-        this.checkState();
-        var3_3 = this.value_;
-        if (var1 == var3_3) ** GOTO lbl9
-        try {
-            this.ioio_.protocol_.setDigitalOutLevel(this.pinNum_, var1);
-            this.value_ = var1;
-lbl9: // 2 sources:
-            // MONITOREXIT : var5_2
-            return;
-        }
-        catch (IOException var4_4) {
-            throw new ConnectionLostException((Exception)var4_4);
-        }
-    }
+	@Override
+	synchronized public void write(boolean val) throws ConnectionLostException {
+		checkState();
+		if (val != value_) {
+			try {
+				ioio_.protocol_.setDigitalOutLevel(pinNum_, val);
+				value_ = val;
+			} catch (IOException e) {
+				throw new ConnectionLostException(e);
+			}
+		}
+	}
 }
-

@@ -1,163 +1,109 @@
-/*
- * Decompiled with CFR 0_110.
- * 
- * Could not load the following classes:
- *  java.lang.IllegalStateException
- *  java.lang.InterruptedException
- *  java.lang.Long
- *  java.lang.Object
- *  java.lang.String
- *  java.util.LinkedList
- *  java.util.Queue
- */
 package ioio.lib.impl;
 
 import ioio.lib.api.PulseInput;
 import ioio.lib.api.exception.ConnectionLostException;
-import ioio.lib.impl.AbstractPin;
-import ioio.lib.impl.AbstractResource;
-import ioio.lib.impl.IOIOImpl;
-import ioio.lib.impl.IncomingState;
+import ioio.lib.impl.IncomingState.DataModuleListener;
+
 import java.util.LinkedList;
 import java.util.Queue;
 
-class IncapImpl
-extends AbstractPin
-implements PulseInput,
-IncomingState.DataModuleListener {
-    private static final int MAX_QUEUE_LEN = 32;
-    private final boolean doublePrecision_;
-    private final int incapNum_;
-    private long lastDuration_;
-    private final PulseMode mode_;
-    private Queue<Long> pulseQueue_ = new LinkedList();
-    private final float timeBase_;
-    private boolean valid_ = false;
+class IncapImpl extends AbstractPin implements DataModuleListener,
+		PulseInput {
+	private static final int MAX_QUEUE_LEN = 32;
+	private final PulseMode mode_;
+	private final int incapNum_;
+	private long lastDuration_;
+	private final float timeBase_;
+	private final boolean doublePrecision_;
+	private boolean valid_ = false;
+	// TODO: a fixed-size array would have been much better than a linked list.
+	private Queue<Long> pulseQueue_ = new LinkedList<Long>();
 
-    public IncapImpl(IOIOImpl iOIOImpl, PulseMode pulseMode, int n, int n2, int n3, int n4, boolean bl) throws ConnectionLostException {
-        super(iOIOImpl, n2);
-        this.mode_ = pulseMode;
-        this.incapNum_ = n;
-        this.timeBase_ = 1.0f / (float)(n4 * n3);
-        this.doublePrecision_ = bl;
-    }
+	public IncapImpl(IOIOImpl ioio, PulseMode mode, int incapNum, int pin,
+			int clockRate, int scale, boolean doublePrecision)
+			throws ConnectionLostException {
+		super(ioio, pin);
+		mode_ = mode;
+		incapNum_ = incapNum;
+		timeBase_ = 1.0f / (scale * clockRate);
+		doublePrecision_ = doublePrecision;
+	}
 
-    private static long ByteArrayToLong(byte[] arrby, int n) {
-        long l = 0;
-        int n2 = n;
-        do {
-            int n3 = n2 - 1;
-            if (n2 <= 0) {
-                if (l == 0) {
-                    l = 1 << n * 8;
-                }
-                return l;
-            }
-            l = l << 8 | (long)(255 & arrby[n3]);
-            n2 = n3;
-        } while (true);
-    }
+	@Override
+	public float getFrequency() throws InterruptedException,
+			ConnectionLostException {
+		if (mode_ != PulseMode.FREQ && mode_ != PulseMode.FREQ_SCALE_4
+				&& mode_ != PulseMode.FREQ_SCALE_16) {
+			throw new IllegalStateException(
+					"Cannot query frequency when module was not opened in frequency mode.");
+		}
+		return 1.0f / getDuration();
+	}
 
-    @Override
-    public void close() {
-        IncapImpl incapImpl = this;
-        synchronized (incapImpl) {
-            this.ioio_.closeIncap(this.incapNum_, this.doublePrecision_);
-            super.close();
-            return;
-        }
-    }
+	@Override
+	public synchronized float getDuration() throws InterruptedException,
+			ConnectionLostException {
+		checkState();
+		while (!valid_) {
+			wait();
+			checkState();
+		}
+		return timeBase_ * lastDuration_;
+	}
 
-    @Override
-    public void dataReceived(byte[] arrby, int n) {
-        void var6_3 = this;
-        synchronized (var6_3) {
-            this.lastDuration_ = IncapImpl.ByteArrayToLong(arrby, n);
-            if (this.pulseQueue_.size() == 32) {
-                this.pulseQueue_.remove();
-            }
-            this.pulseQueue_.add((Object)this.lastDuration_);
-            this.valid_ = true;
-            this.notifyAll();
-            return;
-        }
-    }
+	@Override
+	public synchronized float waitPulseGetDuration()
+			throws InterruptedException, ConnectionLostException {
+		if (mode_ != PulseMode.POSITIVE && mode_ != PulseMode.NEGATIVE) {
+			throw new IllegalStateException(
+					"Cannot wait for pulse when module was not opened in pulse mode.");
+		}
+		checkState();
+		while (pulseQueue_.isEmpty() && state_ == State.OPEN) {
+			wait();
+		}
+		checkState();
+		return timeBase_ * pulseQueue_.remove();
+	}
 
-    @Override
-    public void disconnected() {
-        IncapImpl incapImpl = this;
-        synchronized (incapImpl) {
-            this.notifyAll();
-            super.disconnected();
-            return;
-        }
-    }
+	@Override
+	public synchronized void dataReceived(byte[] data, int size) {
+		lastDuration_ = ByteArrayToLong(data, size);
+		if (pulseQueue_.size() == MAX_QUEUE_LEN) {
+			pulseQueue_.remove();
+		}
+		pulseQueue_.add(lastDuration_);
+		valid_ = true;
+		notifyAll();
+	}
 
-    /*
-     * Enabled aggressive block sorting
-     * Enabled unnecessary exception pruning
-     * Enabled aggressive exception aggregation
-     */
-    @Override
-    public float getDuration() throws InterruptedException, ConnectionLostException {
-        IncapImpl incapImpl = this;
-        synchronized (incapImpl) {
-            this.checkState();
-            do {
-                if (this.valid_) {
-                    float f = this.timeBase_;
-                    long l = this.lastDuration_;
-                    return f * (float)l;
-                }
-                this.wait();
-                this.checkState();
-            } while (true);
-        }
-    }
+	private static long ByteArrayToLong(byte[] data, int size) {
+		long result = 0;
+		int i = size;
+		while (i-- > 0) {
+			result <<= 8;
+			result |= ((int) data[i]) & 0xFF;
+		}
+		if (result == 0) {
+			result = 1 << (size * 8);
+		}
+		return result;
+	}
 
-    @Override
-    public float getFrequency() throws InterruptedException, ConnectionLostException {
-        if (this.mode_ != PulseMode.FREQ && this.mode_ != PulseMode.FREQ_SCALE_4 && this.mode_ != PulseMode.FREQ_SCALE_16) {
-            throw new IllegalStateException("Cannot query frequency when module was not opened in frequency mode.");
-        }
-        return 1.0f / this.getDuration();
-    }
+	@Override
+	public synchronized void reportAdditionalBuffer(int bytesToAdd) {
+	}
 
-    /*
-     * Enabled aggressive block sorting
-     * Converted monitor instructions to comments
-     * Lifted jumps to return sites
-     */
-    @Override
-    public void reportAdditionalBuffer(int n) {
-        void var2_2 = this;
-        // MONITORENTER : var2_2
-        // MONITOREXIT : var2_2
-    }
+	@Override
+	public synchronized void close() {
+		ioio_.closeIncap(incapNum_, doublePrecision_);
+		super.close();
+	}
 
-    /*
-     * Enabled aggressive block sorting
-     * Enabled unnecessary exception pruning
-     * Enabled aggressive exception aggregation
-     */
-    @Override
-    public float waitPulseGetDuration() throws InterruptedException, ConnectionLostException {
-        IncapImpl incapImpl = this;
-        synchronized (incapImpl) {
-            if (this.mode_ != PulseMode.POSITIVE && this.mode_ != PulseMode.NEGATIVE) {
-                throw new IllegalStateException("Cannot wait for pulse when module was not opened in pulse mode.");
-            }
-            this.checkState();
-            do {
-                if (!this.pulseQueue_.isEmpty() || this.state_ != AbstractResource.State.OPEN) {
-                    this.checkState();
-                    float f = this.timeBase_;
-                    long l = (Long)this.pulseQueue_.remove();
-                    return f * (float)l;
-                }
-                this.wait();
-            } while (true);
-        }
-    }
+	@Override
+	public synchronized void disconnected() {
+		notifyAll();
+		super.disconnected();
+	}
+
 }
-

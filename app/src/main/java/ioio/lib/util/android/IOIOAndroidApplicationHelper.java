@@ -1,91 +1,69 @@
-/*
- * Decompiled with CFR 0_110.
- * 
- * Could not load the following classes:
- *  android.content.ContextWrapper
- *  java.lang.Object
- *  java.lang.String
- *  java.util.Collection
- *  java.util.Iterator
- */
 package ioio.lib.util.android;
 
-import android.content.ContextWrapper;
 import ioio.lib.spi.IOIOConnectionBootstrap;
 import ioio.lib.util.IOIOApplicationHelper;
 import ioio.lib.util.IOIOConnectionRegistry;
 import ioio.lib.util.IOIOLooperProvider;
-import ioio.lib.util.android.ContextWrapperDependent;
-import java.util.Collection;
-import java.util.Iterator;
 
-public class IOIOAndroidApplicationHelper
-extends IOIOApplicationHelper {
-    private final ContextWrapper contextWrapper_;
+import android.content.ContextWrapper;
 
-    static {
-        IOIOConnectionRegistry.addBootstraps(new String[]{"ioio.lib.android.accessory.AccessoryConnectionBootstrap", "ioio.lib.android.bluetooth.BluetoothIOIOConnectionBootstrap"});
-    }
+public class IOIOAndroidApplicationHelper extends IOIOApplicationHelper {
+	private final ContextWrapper contextWrapper_;
 
-    public IOIOAndroidApplicationHelper(ContextWrapper contextWrapper, IOIOLooperProvider iOIOLooperProvider) {
-        super(iOIOLooperProvider);
-        this.contextWrapper_ = contextWrapper;
-    }
+	public IOIOAndroidApplicationHelper(ContextWrapper wrapper,
+			IOIOLooperProvider provider) {
+		super(provider);
+		contextWrapper_ = wrapper;
+	}
 
-    public void create() {
-        Iterator iterator = this.bootstraps_.iterator();
-        while (iterator.hasNext()) {
-            IOIOConnectionBootstrap iOIOConnectionBootstrap = (IOIOConnectionBootstrap)iterator.next();
-            if (!(iOIOConnectionBootstrap instanceof ContextWrapperDependent)) continue;
-            ((ContextWrapperDependent)((Object)iOIOConnectionBootstrap)).onCreate(this.contextWrapper_);
-        }
-        return;
-    }
+	static {
+		IOIOConnectionRegistry
+				.addBootstraps(new String[] {
+						"ioio.lib.android.accessory.AccessoryConnectionBootstrap",
+						"ioio.lib.android.bluetooth.BluetoothIOIOConnectionBootstrap" });
+	}
 
-    public void destroy() {
-        Iterator iterator = this.bootstraps_.iterator();
-        while (iterator.hasNext()) {
-            IOIOConnectionBootstrap iOIOConnectionBootstrap = (IOIOConnectionBootstrap)iterator.next();
-            if (!(iOIOConnectionBootstrap instanceof ContextWrapperDependent)) continue;
-            ((ContextWrapperDependent)((Object)iOIOConnectionBootstrap)).onDestroy();
-        }
-        return;
-    }
+	public void create() {
+		for (IOIOConnectionBootstrap bootstrap : bootstraps_) {
+			if (bootstrap instanceof ContextWrapperDependent) {
+				((ContextWrapperDependent) bootstrap).onCreate(contextWrapper_);
+			}
+		}
+	}
 
-    public void restart() {
-        Iterator iterator = this.bootstraps_.iterator();
-        while (iterator.hasNext()) {
-            IOIOConnectionBootstrap iOIOConnectionBootstrap = (IOIOConnectionBootstrap)iterator.next();
-            if (!(iOIOConnectionBootstrap instanceof ContextWrapperDependent)) continue;
-            ((ContextWrapperDependent)((Object)iOIOConnectionBootstrap)).reopen();
-        }
-        return;
-    }
+	public void destroy() {
+		for (IOIOConnectionBootstrap bootstrap : bootstraps_) {
+			if (bootstrap instanceof ContextWrapperDependent) {
+				((ContextWrapperDependent) bootstrap).onDestroy();
+			}
+		}
+	}
 
-    @Override
-    public void start() {
-        Iterator iterator = this.bootstraps_.iterator();
-        do {
-            if (!iterator.hasNext()) {
-                super.start();
-                return;
-            }
-            IOIOConnectionBootstrap iOIOConnectionBootstrap = (IOIOConnectionBootstrap)iterator.next();
-            if (!(iOIOConnectionBootstrap instanceof ContextWrapperDependent)) continue;
-            ((ContextWrapperDependent)((Object)iOIOConnectionBootstrap)).open();
-        } while (true);
-    }
+	@Override
+	public void start() {
+		for (IOIOConnectionBootstrap bootstrap : bootstraps_) {
+			if (bootstrap instanceof ContextWrapperDependent) {
+				((ContextWrapperDependent) bootstrap).open();
+			}
+		}
+		super.start();
+	}
 
-    @Override
-    public void stop() {
-        super.stop();
-        Iterator iterator = this.bootstraps_.iterator();
-        while (iterator.hasNext()) {
-            IOIOConnectionBootstrap iOIOConnectionBootstrap = (IOIOConnectionBootstrap)iterator.next();
-            if (!(iOIOConnectionBootstrap instanceof ContextWrapperDependent)) continue;
-            ((ContextWrapperDependent)((Object)iOIOConnectionBootstrap)).close();
-        }
-        return;
-    }
+	@Override
+	public void stop() {
+		super.stop();
+		for (IOIOConnectionBootstrap bootstrap : bootstraps_) {
+			if (bootstrap instanceof ContextWrapperDependent) {
+				((ContextWrapperDependent) bootstrap).close();
+			}
+		}
+	}
+
+	public void restart() {
+		for (IOIOConnectionBootstrap bootstrap : bootstraps_) {
+			if (bootstrap instanceof ContextWrapperDependent) {
+				((ContextWrapperDependent) bootstrap).reopen();
+			}
+		}
+	}
 }
-

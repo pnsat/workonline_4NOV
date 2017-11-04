@@ -1,13 +1,30 @@
 /*
- * Decompiled with CFR 0_110.
+ * Copyright 2011 Ytai Ben-Tsvi. All rights reserved.
+ *  
  * 
- * Could not load the following classes:
- *  java.io.IOException
- *  java.lang.InterruptedException
- *  java.lang.Object
- *  java.lang.Thread
- *  java.util.concurrent.ArrayBlockingQueue
- *  java.util.concurrent.BlockingQueue
+ * Redistribution and use in source and binary forms, with or without modification, are
+ * permitted provided that the following conditions are met:
+ * 
+ *    1. Redistributions of source code must retain the above copyright notice, this list of
+ *       conditions and the following disclaimer.
+ * 
+ *    2. Redistributions in binary form must reproduce the above copyright notice, this list
+ *       of conditions and the following disclaimer in the documentation and/or other materials
+ *       provided with the distribution.
+ * 
+ * THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+ * FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL ARSHAN POURSOHI OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+ * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * 
+ * The views and conclusions contained in the software and documentation are those of the
+ * authors and should not be interpreted as representing official policies, either expressed
+ * or implied.
  */
 package ioio.lib.impl;
 
@@ -16,160 +33,86 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 class FlowControlledPacketSender {
-    private boolean closed_;
-    private final BlockingQueue<Packet> queue_ = new ArrayBlockingQueue(256);
-    private int readyToSend_;
-    private final Sender sender_;
-    private final FlushThread thread_;
+	interface Packet {
+		int getSize();
+	}
 
-    public FlowControlledPacketSender(Sender sender) {
-        this.thread_ = (FlowControlledPacketSender)this.new FlushThread();
-        this.readyToSend_ = 0;
-        this.closed_ = false;
-        this.sender_ = sender;
-        this.thread_.start();
-    }
+	interface Sender {
+		void send(Packet packet);
+	}
 
-    static /* synthetic */ BlockingQueue access$0(FlowControlledPacketSender flowControlledPacketSender) {
-        return flowControlledPacketSender.queue_;
-    }
+	private final Sender sender_;
+	private final BlockingQueue<Packet> queue_ = new ArrayBlockingQueue<Packet>(
+			Constants.PACKET_BUFFER_SIZE);
+	private final FlushThread thread_ = new FlushThread();
 
-    static /* synthetic */ int access$1(FlowControlledPacketSender flowControlledPacketSender) {
-        return flowControlledPacketSender.readyToSend_;
-    }
+	private int readyToSend_ = 0;
+	private boolean closed_ = false;
 
-    static /* synthetic */ void access$2(FlowControlledPacketSender flowControlledPacketSender, int n) {
-        flowControlledPacketSender.readyToSend_ = n;
-    }
+	public FlowControlledPacketSender(Sender sender) {
+		sender_ = sender;
+		thread_.start();
+	}
 
-    static /* synthetic */ Sender access$3(FlowControlledPacketSender flowControlledPacketSender) {
-        return flowControlledPacketSender.sender_;
-    }
+	synchronized public void flush() throws IOException {
+		try {
+			while (!closed_ && !queue_.isEmpty()) {
+				wait();
+			}
+		} catch (InterruptedException e) {
+			throw new IOException("Interrupted");
+		}
+		if (closed_) {
+			throw new IllegalStateException("Stream has been closed");
+		}
+	}
 
-    public void close() {
-        FlowControlledPacketSender flowControlledPacketSender = this;
-        synchronized (flowControlledPacketSender) {
-            this.closed_ = true;
-            this.thread_.interrupt();
-            return;
-        }
-    }
+	synchronized public void write(Packet packet) throws IOException {
+		try {
+			while (!closed_ && !queue_.offer(packet)) {
+				wait();
+			}
+		} catch (InterruptedException e) {
+			throw new IOException("Interrupted");
+		}
+		if (closed_) {
+			throw new IllegalStateException("Stream has been closed");
+		}
+		notifyAll();
+	}
 
-    /*
-     * Exception decompiling
-     */
-    public void flush() throws IOException {
-        // This method has failed to decompile.  When submitting a bug report, please provide this stack trace, and (if you hold appropriate legal rights) the relevant class file.
-        // org.benf.cfr.reader.util.ConfusedCFRException: Started 2 blocks at once
-        // org.benf.cfr.reader.bytecode.analysis.opgraph.Op04StructuredStatement.getStartingBlocks(Op04StructuredStatement.java:371)
-        // org.benf.cfr.reader.bytecode.analysis.opgraph.Op04StructuredStatement.buildNestedBlocks(Op04StructuredStatement.java:449)
-        // org.benf.cfr.reader.bytecode.analysis.opgraph.Op03SimpleStatement.createInitialStructuredBlock(Op03SimpleStatement.java:2859)
-        // org.benf.cfr.reader.bytecode.CodeAnalyser.getAnalysisInner(CodeAnalyser.java:805)
-        // org.benf.cfr.reader.bytecode.CodeAnalyser.getAnalysisOrWrapFail(CodeAnalyser.java:220)
-        // org.benf.cfr.reader.bytecode.CodeAnalyser.getAnalysis(CodeAnalyser.java:165)
-        // org.benf.cfr.reader.entities.attributes.AttributeCode.analyse(AttributeCode.java:91)
-        // org.benf.cfr.reader.entities.Method.analyse(Method.java:354)
-        // org.benf.cfr.reader.entities.ClassFile.analyseMid(ClassFile.java:751)
-        // org.benf.cfr.reader.entities.ClassFile.analyseTop(ClassFile.java:683)
-        // org.benf.cfr.reader.Main.doJar(Main.java:128)
-        // com.njlabs.showjava.processor.JavaExtractor$1.run(JavaExtractor.java:100)
-        // java.lang.Thread.run(Thread.java:818)
-        throw new IllegalStateException("Decompilation failed");
-    }
+	synchronized public void readyToSend(int numBytes) {
+		readyToSend_ += numBytes;
+		notifyAll();
+	}
 
-    public void kill() {
-        FlowControlledPacketSender flowControlledPacketSender = this;
-        synchronized (flowControlledPacketSender) {
-            this.thread_.interrupt();
-            return;
-        }
-    }
+	synchronized public void close() {
+		closed_ = true;
+		thread_.interrupt();
+	}
 
-    public void readyToSend(int n) {
-        void var3_2 = this;
-        synchronized (var3_2) {
-            this.readyToSend_ = n + this.readyToSend_;
-            this.notifyAll();
-            return;
-        }
-    }
+	synchronized public void kill() {
+		thread_.interrupt();
+	}
 
-    /*
-     * Exception decompiling
-     */
-    public void write(Packet var1) throws IOException {
-        // This method has failed to decompile.  When submitting a bug report, please provide this stack trace, and (if you hold appropriate legal rights) the relevant class file.
-        // java.util.ConcurrentModificationException
-        // java.util.LinkedList$ReverseLinkIterator.next(LinkedList.java:217)
-        // org.benf.cfr.reader.bytecode.analysis.structured.statement.Block.extractLabelledBlocks(Block.java:212)
-        // org.benf.cfr.reader.bytecode.analysis.opgraph.Op04StructuredStatement$LabelledBlockExtractor.transform(Op04StructuredStatement.java:485)
-        // org.benf.cfr.reader.bytecode.analysis.opgraph.Op04StructuredStatement.transform(Op04StructuredStatement.java:639)
-        // org.benf.cfr.reader.bytecode.analysis.structured.statement.StructuredDo.transformStructuredChildren(StructuredDo.java:53)
-        // org.benf.cfr.reader.bytecode.analysis.opgraph.Op04StructuredStatement$LabelledBlockExtractor.transform(Op04StructuredStatement.java:487)
-        // org.benf.cfr.reader.bytecode.analysis.opgraph.Op04StructuredStatement.transform(Op04StructuredStatement.java:639)
-        // org.benf.cfr.reader.bytecode.analysis.structured.statement.Block.transformStructuredChildren(Block.java:378)
-        // org.benf.cfr.reader.bytecode.analysis.opgraph.Op04StructuredStatement$LabelledBlockExtractor.transform(Op04StructuredStatement.java:487)
-        // org.benf.cfr.reader.bytecode.analysis.opgraph.Op04StructuredStatement.transform(Op04StructuredStatement.java:639)
-        // org.benf.cfr.reader.bytecode.analysis.opgraph.Op04StructuredStatement.insertLabelledBlocks(Op04StructuredStatement.java:649)
-        // org.benf.cfr.reader.bytecode.CodeAnalyser.getAnalysisInner(CodeAnalyser.java:816)
-        // org.benf.cfr.reader.bytecode.CodeAnalyser.getAnalysisOrWrapFail(CodeAnalyser.java:220)
-        // org.benf.cfr.reader.bytecode.CodeAnalyser.getAnalysis(CodeAnalyser.java:165)
-        // org.benf.cfr.reader.entities.attributes.AttributeCode.analyse(AttributeCode.java:91)
-        // org.benf.cfr.reader.entities.Method.analyse(Method.java:354)
-        // org.benf.cfr.reader.entities.ClassFile.analyseMid(ClassFile.java:751)
-        // org.benf.cfr.reader.entities.ClassFile.analyseTop(ClassFile.java:683)
-        // org.benf.cfr.reader.Main.doJar(Main.java:128)
-        // com.njlabs.showjava.processor.JavaExtractor$1.run(JavaExtractor.java:100)
-        // java.lang.Thread.run(Thread.java:818)
-        throw new IllegalStateException("Decompilation failed");
-    }
-
-    class FlushThread
-    extends Thread {
-        FlushThread() {
-        }
-
-        /*
-         * Unable to fully structure code
-         * Enabled aggressive block sorting
-         * Enabled unnecessary exception pruning
-         * Enabled aggressive exception aggregation
-         * Converted monitor instructions to comments
-         * Lifted jumps to return sites
-         */
-        public void run() {
-            super.run();
-            block7 : do {
-                var5_2 = var2_3 = FlowControlledPacketSender.this;
-                // MONITORENTER : var5_2
-                do {
-                    if (!FlowControlledPacketSender.access$0(FlowControlledPacketSender.this).isEmpty() && FlowControlledPacketSender.access$1(FlowControlledPacketSender.this) >= ((Packet)FlowControlledPacketSender.access$0(FlowControlledPacketSender.this).peek()).getSize()) {
-                        FlowControlledPacketSender.this.notifyAll();
-                        var4_1 = FlowControlledPacketSender.this;
-                        FlowControlledPacketSender.access$2(var4_1, FlowControlledPacketSender.access$1(var4_1) - ((Packet)FlowControlledPacketSender.access$0(FlowControlledPacketSender.this).peek()).getSize());
-                        // MONITOREXIT : var5_2
-                        FlowControlledPacketSender.access$3(FlowControlledPacketSender.this).send((Packet)FlowControlledPacketSender.access$0(FlowControlledPacketSender.this).remove());
-                        continue block7;
-                    }
-                    ** GOTO lbl18
-                    catch (InterruptedException var1_4) {
-                        return;
-                    }
-lbl18: // 1 sources:
-                    FlowControlledPacketSender.this.wait();
-                } while (true);
-                break;
-            } while (true);
-        }
-    }
-
-    static interface Packet {
-        public int getSize();
-    }
-
-    static interface Sender {
-        public void send(Packet var1);
-    }
-
+	class FlushThread extends Thread {
+		@Override
+		public void run() {
+			super.run();
+			try {
+				while (true) {
+					synchronized (FlowControlledPacketSender.this) {
+						while (queue_.isEmpty()
+								|| readyToSend_ < queue_.peek().getSize()) {
+							FlowControlledPacketSender.this.wait();
+						}
+						FlowControlledPacketSender.this.notifyAll();
+						readyToSend_ -= queue_.peek().getSize();
+					}
+					sender_.send(queue_.remove());
+				}
+			} catch (InterruptedException e) {
+			}
+		}
+	}
 }
-

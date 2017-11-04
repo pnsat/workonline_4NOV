@@ -1,41 +1,48 @@
-/*
- * Decompiled with CFR 0_110.
- * 
- * Could not load the following classes:
- *  java.lang.InterruptedException
- *  java.lang.Object
- *  java.lang.Thread
- */
 package ioio.lib.util;
 
 import ioio.lib.api.IOIO;
 import ioio.lib.api.exception.ConnectionLostException;
-import ioio.lib.util.IOIOLooper;
 
-public class BaseIOIOLooper
-implements IOIOLooper {
-    protected IOIO ioio_;
+/**
+ * A convenience implementation of {@link IOIOLooper}.
+ * 
+ * This base class provides no-op implementations for all methods and provides
+ * the {@link #ioio_} field for subclasses.
+ * 
+ */
+public class BaseIOIOLooper implements IOIOLooper {
+	protected IOIO ioio_;
 
-    @Override
-    public void disconnected() {
-    }
+	@Override
+	public final void setup(IOIO ioio) throws ConnectionLostException,
+			InterruptedException {
+		ioio_ = ioio;
+		setup();
+	}
 
-    @Override
-    public void incompatible() {
-    }
+	/**
+	 * This method will be called as soon as connection to the IOIO has been
+	 * established. Typically, this will include opening pins and modules using
+	 * the openXXX() methods of the {@link #ioio_} field.
+	 * 
+	 * @throws ConnectionLostException
+	 *             The connection to the IOIO has been lost.
+	 * @throws InterruptedException
+	 *             The thread has been interrupted.
+	 */
+	protected void setup() throws ConnectionLostException, InterruptedException {
+	}
 
-    @Override
-    public void loop() throws ConnectionLostException, InterruptedException {
-        Thread.sleep((long)20);
-    }
+	@Override
+	public void loop() throws ConnectionLostException, InterruptedException {
+		Thread.sleep(20);
+	}
 
-    protected void setup() throws ConnectionLostException, InterruptedException {
-    }
+	@Override
+	public void disconnected() {
+	}
 
-    @Override
-    public final void setup(IOIO iOIO) throws ConnectionLostException, InterruptedException {
-        this.ioio_ = iOIO;
-        this.setup();
-    }
+	@Override
+	public void incompatible() {
+	}
 }
-

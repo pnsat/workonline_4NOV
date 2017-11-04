@@ -1,16 +1,30 @@
 /*
- * Decompiled with CFR 0_110.
+ * Copyright 2011 Ytai Ben-Tsvi. All rights reserved.
+ *  
  * 
- * Could not load the following classes:
- *  java.io.IOException
- *  java.io.OutputStream
- *  java.lang.Byte
- *  java.lang.InterruptedException
- *  java.lang.Math
- *  java.lang.Object
- *  java.lang.Thread
- *  java.util.concurrent.ArrayBlockingQueue
- *  java.util.concurrent.BlockingQueue
+ * Redistribution and use in source and binary forms, with or without modification, are
+ * permitted provided that the following conditions are met:
+ * 
+ *    1. Redistributions of source code must retain the above copyright notice, this list of
+ *       conditions and the following disclaimer.
+ * 
+ *    2. Redistributions in binary form must reproduce the above copyright notice, this list
+ *       of conditions and the following disclaimer in the documentation and/or other materials
+ *       provided with the distribution.
+ * 
+ * THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+ * FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL ARSHAN POURSOHI OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+ * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * 
+ * The views and conclusions contained in the software and documentation are those of the
+ * authors and should not be interpreted as representing official policies, either expressed
+ * or implied.
  */
 package ioio.lib.impl;
 
@@ -19,178 +33,95 @@ import java.io.OutputStream;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
-class FlowControlledOutputStream
-extends OutputStream {
-    private boolean closed_;
-    private final int maxPacket_;
-    private final byte[] packet_;
-    private final BlockingQueue<Byte> queue_ = new ArrayBlockingQueue(1024);
-    private int readyToSend_;
-    private final Sender sender_;
-    private final FlushThread thread_;
+class FlowControlledOutputStream extends OutputStream {
+	interface Sender {
+		void send(byte[] data, int size);
+	}
 
-    public FlowControlledOutputStream(Sender sender, int n) {
-        this.thread_ = (FlowControlledOutputStream)this.new FlushThread();
-        this.readyToSend_ = 0;
-        this.closed_ = false;
-        this.sender_ = sender;
-        this.maxPacket_ = n;
-        this.packet_ = new byte[n];
-        this.thread_.start();
-    }
+	private final Sender sender_;
+	private final BlockingQueue<Byte> queue_ = new ArrayBlockingQueue<Byte>(
+			Constants.BUFFER_SIZE);
+	private final FlushThread thread_ = new FlushThread();
+	private final int maxPacket_;
+	private final byte[] packet_;
 
-    static /* synthetic */ int access$0(FlowControlledOutputStream flowControlledOutputStream) {
-        return flowControlledOutputStream.readyToSend_;
-    }
+	private int readyToSend_ = 0;
+	private boolean closed_ = false;
 
-    static /* synthetic */ BlockingQueue access$1(FlowControlledOutputStream flowControlledOutputStream) {
-        return flowControlledOutputStream.queue_;
-    }
+	public FlowControlledOutputStream(Sender sender, int maxPacket) {
+		sender_ = sender;
+		maxPacket_ = maxPacket;
+		packet_ = new byte[maxPacket];
+		thread_.start();
+	}
 
-    static /* synthetic */ int access$2(FlowControlledOutputStream flowControlledOutputStream) {
-        return flowControlledOutputStream.maxPacket_;
-    }
+	@Override
+	synchronized public void flush() throws IOException {
+		try {
+			while (!closed_ && !queue_.isEmpty()) {
+				wait();
+			}
+		} catch (InterruptedException e) {
+			throw new IOException("Interrupted");
+		}
+		if (closed_) {
+			throw new IOException("Stream has been closed");
+		}
+	}
 
-    static /* synthetic */ byte[] access$3(FlowControlledOutputStream flowControlledOutputStream) {
-        return flowControlledOutputStream.packet_;
-    }
+	@Override
+	synchronized public void write(int oneByte) throws IOException {
+		try {
+			while (!closed_ && !queue_.offer((byte) oneByte)) {
+				wait();
+			}
+		} catch (InterruptedException e) {
+			throw new IOException("Interrupted");
+		}
+		if (closed_) {
+			throw new IOException("Stream has been closed");
+		}
+		notifyAll();
+	}
 
-    static /* synthetic */ void access$4(FlowControlledOutputStream flowControlledOutputStream, int n) {
-        flowControlledOutputStream.readyToSend_ = n;
-    }
+	synchronized public void readyToSend(int numBytes) {
+		readyToSend_ += numBytes;
+		notifyAll();
+	}
 
-    static /* synthetic */ Sender access$5(FlowControlledOutputStream flowControlledOutputStream) {
-        return flowControlledOutputStream.sender_;
-    }
+	@Override
+	synchronized public void close() {
+		if (closed_) {
+			return;
+		}
+		closed_ = true;
+		notifyAll();
+		thread_.interrupt();
+	}
 
-    /*
-     * Enabled aggressive block sorting
-     * Enabled unnecessary exception pruning
-     * Enabled aggressive exception aggregation
-     */
-    public void close() {
-        FlowControlledOutputStream flowControlledOutputStream = this;
-        synchronized (flowControlledOutputStream) {
-            boolean bl = this.closed_;
-            if (!bl) {
-                this.closed_ = true;
-                this.notifyAll();
-                this.thread_.interrupt();
-            }
-            return;
-        }
-    }
-
-    /*
-     * Exception decompiling
-     */
-    public void flush() throws IOException {
-        // This method has failed to decompile.  When submitting a bug report, please provide this stack trace, and (if you hold appropriate legal rights) the relevant class file.
-        // org.benf.cfr.reader.util.ConfusedCFRException: Started 2 blocks at once
-        // org.benf.cfr.reader.bytecode.analysis.opgraph.Op04StructuredStatement.getStartingBlocks(Op04StructuredStatement.java:371)
-        // org.benf.cfr.reader.bytecode.analysis.opgraph.Op04StructuredStatement.buildNestedBlocks(Op04StructuredStatement.java:449)
-        // org.benf.cfr.reader.bytecode.analysis.opgraph.Op03SimpleStatement.createInitialStructuredBlock(Op03SimpleStatement.java:2859)
-        // org.benf.cfr.reader.bytecode.CodeAnalyser.getAnalysisInner(CodeAnalyser.java:805)
-        // org.benf.cfr.reader.bytecode.CodeAnalyser.getAnalysisOrWrapFail(CodeAnalyser.java:220)
-        // org.benf.cfr.reader.bytecode.CodeAnalyser.getAnalysis(CodeAnalyser.java:165)
-        // org.benf.cfr.reader.entities.attributes.AttributeCode.analyse(AttributeCode.java:91)
-        // org.benf.cfr.reader.entities.Method.analyse(Method.java:354)
-        // org.benf.cfr.reader.entities.ClassFile.analyseMid(ClassFile.java:751)
-        // org.benf.cfr.reader.entities.ClassFile.analyseTop(ClassFile.java:683)
-        // org.benf.cfr.reader.Main.doJar(Main.java:128)
-        // com.njlabs.showjava.processor.JavaExtractor$1.run(JavaExtractor.java:100)
-        // java.lang.Thread.run(Thread.java:818)
-        throw new IllegalStateException("Decompilation failed");
-    }
-
-    public void readyToSend(int n) {
-        void var3_2 = this;
-        synchronized (var3_2) {
-            this.readyToSend_ = n + this.readyToSend_;
-            this.notifyAll();
-            return;
-        }
-    }
-
-    /*
-     * Exception decompiling
-     */
-    public void write(int var1) throws IOException {
-        // This method has failed to decompile.  When submitting a bug report, please provide this stack trace, and (if you hold appropriate legal rights) the relevant class file.
-        // java.util.ConcurrentModificationException
-        // java.util.LinkedList$ReverseLinkIterator.next(LinkedList.java:217)
-        // org.benf.cfr.reader.bytecode.analysis.structured.statement.Block.extractLabelledBlocks(Block.java:212)
-        // org.benf.cfr.reader.bytecode.analysis.opgraph.Op04StructuredStatement$LabelledBlockExtractor.transform(Op04StructuredStatement.java:485)
-        // org.benf.cfr.reader.bytecode.analysis.opgraph.Op04StructuredStatement.transform(Op04StructuredStatement.java:639)
-        // org.benf.cfr.reader.bytecode.analysis.structured.statement.StructuredDo.transformStructuredChildren(StructuredDo.java:53)
-        // org.benf.cfr.reader.bytecode.analysis.opgraph.Op04StructuredStatement$LabelledBlockExtractor.transform(Op04StructuredStatement.java:487)
-        // org.benf.cfr.reader.bytecode.analysis.opgraph.Op04StructuredStatement.transform(Op04StructuredStatement.java:639)
-        // org.benf.cfr.reader.bytecode.analysis.structured.statement.Block.transformStructuredChildren(Block.java:378)
-        // org.benf.cfr.reader.bytecode.analysis.opgraph.Op04StructuredStatement$LabelledBlockExtractor.transform(Op04StructuredStatement.java:487)
-        // org.benf.cfr.reader.bytecode.analysis.opgraph.Op04StructuredStatement.transform(Op04StructuredStatement.java:639)
-        // org.benf.cfr.reader.bytecode.analysis.opgraph.Op04StructuredStatement.insertLabelledBlocks(Op04StructuredStatement.java:649)
-        // org.benf.cfr.reader.bytecode.CodeAnalyser.getAnalysisInner(CodeAnalyser.java:816)
-        // org.benf.cfr.reader.bytecode.CodeAnalyser.getAnalysisOrWrapFail(CodeAnalyser.java:220)
-        // org.benf.cfr.reader.bytecode.CodeAnalyser.getAnalysis(CodeAnalyser.java:165)
-        // org.benf.cfr.reader.entities.attributes.AttributeCode.analyse(AttributeCode.java:91)
-        // org.benf.cfr.reader.entities.Method.analyse(Method.java:354)
-        // org.benf.cfr.reader.entities.ClassFile.analyseMid(ClassFile.java:751)
-        // org.benf.cfr.reader.entities.ClassFile.analyseTop(ClassFile.java:683)
-        // org.benf.cfr.reader.Main.doJar(Main.java:128)
-        // com.njlabs.showjava.processor.JavaExtractor$1.run(JavaExtractor.java:100)
-        // java.lang.Thread.run(Thread.java:818)
-        throw new IllegalStateException("Decompilation failed");
-    }
-
-    class FlushThread
-    extends Thread {
-        FlushThread() {
-        }
-
-        /*
-         * Unable to fully structure code
-         * Enabled aggressive block sorting
-         * Enabled unnecessary exception pruning
-         * Enabled aggressive exception aggregation
-         * Converted monitor instructions to comments
-         * Lifted jumps to return sites
-         */
-        public void run() {
-            super.run();
-            block8 : do {
-                var7_2 = var2_5 = FlowControlledOutputStream.this;
-                // MONITORENTER : var7_2
-                do {
-                    if (FlowControlledOutputStream.access$0(FlowControlledOutputStream.this) != 0 && !FlowControlledOutputStream.access$1(FlowControlledOutputStream.this).isEmpty()) break;
-                    FlowControlledOutputStream.this.wait();
-                } while (true);
-                var4_1 = Math.min((int)FlowControlledOutputStream.access$2(FlowControlledOutputStream.this), (int)Math.min((int)FlowControlledOutputStream.access$0(FlowControlledOutputStream.this), (int)FlowControlledOutputStream.access$1(FlowControlledOutputStream.this).size()));
-                var5_4 = 0;
-                do {
-                    if (var5_4 >= var4_1) {
-                        var6_3 = FlowControlledOutputStream.this;
-                        FlowControlledOutputStream.access$4(var6_3, FlowControlledOutputStream.access$0(var6_3) - var4_1);
-                        FlowControlledOutputStream.this.notifyAll();
-                        // MONITOREXIT : var7_2
-                        FlowControlledOutputStream.access$5(FlowControlledOutputStream.this).send(FlowControlledOutputStream.access$3(FlowControlledOutputStream.this), var4_1);
-                        continue block8;
-                    }
-                    ** GOTO lbl24
-                    catch (InterruptedException var1_6) {
-                        return;
-                    }
-lbl24: // 1 sources:
-                    FlowControlledOutputStream.access$3((FlowControlledOutputStream)FlowControlledOutputStream.this)[var5_4] = ((Byte)FlowControlledOutputStream.access$1(FlowControlledOutputStream.this).remove()).byteValue();
-                    ++var5_4;
-                } while (true);
-                break;
-            } while (true);
-        }
-    }
-
-    static interface Sender {
-        public void send(byte[] var1, int var2);
-    }
-
+	class FlushThread extends Thread {
+		@Override
+		public void run() {
+			super.run();
+			try {
+				while (true) {
+					int toSend;
+					synchronized (FlowControlledOutputStream.this) {
+						while (readyToSend_ == 0 || queue_.isEmpty()) {
+							FlowControlledOutputStream.this.wait();
+						}
+						toSend = Math.min(maxPacket_,
+								Math.min(readyToSend_, queue_.size()));
+						for (int i = 0; i < toSend; ++i) {
+							packet_[i] = queue_.remove();
+						}
+						readyToSend_ -= toSend;
+						FlowControlledOutputStream.this.notifyAll();
+					}
+					sender_.send(packet_, toSend);
+				}
+			} catch (InterruptedException e) {
+			}
+		}
+	}
 }
-

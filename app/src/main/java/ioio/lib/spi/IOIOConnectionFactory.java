@@ -1,19 +1,21 @@
-/*
- * Decompiled with CFR 0_110.
- * 
- * Could not load the following classes:
- *  java.lang.Object
- *  java.lang.String
- */
 package ioio.lib.spi;
 
 import ioio.lib.api.IOIOConnection;
 
 public interface IOIOConnectionFactory {
-    public IOIOConnection createConnection();
+	/**
+	 * A unique name of the connection type. Typically a fully-qualified
+	 * name of the connection class.
+	 */
+	public String getType();
 
-    public Object getExtra();
+	/**
+	 * Extra information on the connection. This is specific to the
+	 * connection type. For example, for a Bluetooth connection, this is an
+	 * array containing the name and the Bluetooth address of the remote
+	 * IOIO.
+	 */
+	public Object getExtra();
 
-    public String getType();
+	public IOIOConnection createConnection();
 }
-

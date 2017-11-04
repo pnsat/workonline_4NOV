@@ -1,113 +1,75 @@
 /*
- * Decompiled with CFR 0_110.
+ * Copyright 2011 Ytai Ben-Tsvi. All rights reserved.
+ *  
  * 
- * Could not load the following classes:
- *  java.lang.Class
- *  java.lang.Enum
- *  java.lang.IllegalStateException
- *  java.lang.Object
- *  java.lang.String
- *  java.lang.System
+ * Redistribution and use in source and binary forms, with or without modification, are
+ * permitted provided that the following conditions are met:
+ * 
+ *    1. Redistributions of source code must retain the above copyright notice, this list of
+ *       conditions and the following disclaimer.
+ * 
+ *    2. Redistributions in binary form must reproduce the above copyright notice, this list
+ *       of conditions and the following disclaimer in the documentation and/or other materials
+ *       provided with the distribution.
+ * 
+ * THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+ * FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL ARSHAN POURSOHI OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+ * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * 
+ * The views and conclusions contained in the software and documentation are those of the
+ * authors and should not be interpreted as representing official policies, either expressed
+ * or implied.
  */
 package ioio.lib.impl;
 
-import ioio.lib.api.Closeable;
 import ioio.lib.api.exception.ConnectionLostException;
-import ioio.lib.impl.IOIOImpl;
-import ioio.lib.impl.IncomingState;
+import ioio.lib.impl.IncomingState.DisconnectListener;
+import ioio.lib.api.Closeable;
 
-class AbstractResource
-implements Closeable,
-IncomingState.DisconnectListener {
-    protected final IOIOImpl ioio_;
-    protected State state_ = State.OPEN;
+class AbstractResource implements Closeable, DisconnectListener {
+	enum State {
+		OPEN,
+		CLOSED,
+		DISCONNECTED
+	}
+	
+	protected State state_ = State.OPEN;
+	protected final IOIOImpl ioio_;
 
-    public AbstractResource(IOIOImpl iOIOImpl) throws ConnectionLostException {
-        this.ioio_ = iOIOImpl;
-    }
+	public AbstractResource(IOIOImpl ioio) throws ConnectionLostException {
+		ioio_ = ioio;
+	}
+	
+	@Override
+	synchronized public void disconnected() {
+		if (state_ != State.CLOSED) {
+			state_ = State.DISCONNECTED;
+		}
+	}
 
-    /*
-     * Enabled aggressive block sorting
-     * Enabled unnecessary exception pruning
-     * Enabled aggressive exception aggregation
-     */
-    protected void checkState() throws ConnectionLostException {
-        AbstractResource abstractResource = this;
-        synchronized (abstractResource) {
-            if (this.state_ == State.CLOSED) {
-                throw new IllegalStateException("Trying to use a closed resouce");
-            }
-            if (this.state_ == State.DISCONNECTED) {
-                throw new ConnectionLostException();
-            }
-            return;
-        }
-    }
-
-    /*
-     * Enabled aggressive block sorting
-     * Enabled unnecessary exception pruning
-     * Enabled aggressive exception aggregation
-     */
-    @Override
-    public void close() {
-        AbstractResource abstractResource = this;
-        synchronized (abstractResource) {
-            if (this.state_ == State.CLOSED) {
-                throw new IllegalStateException("Trying to use a closed resouce");
-            }
-            if (this.state_ == State.DISCONNECTED) {
-                this.state_ = State.CLOSED;
-            } else {
-                this.state_ = State.CLOSED;
-                this.ioio_.removeDisconnectListener(this);
-            }
-            return;
-        }
-    }
-
-    @Override
-    public void disconnected() {
-        AbstractResource abstractResource = this;
-        synchronized (abstractResource) {
-            if (this.state_ != State.CLOSED) {
-                this.state_ = State.DISCONNECTED;
-            }
-            return;
-        }
-    }
-
-    static final class State
-    extends Enum<State> {
-        public static final /* enum */ State CLOSED;
-        public static final /* enum */ State DISCONNECTED;
-        private static final /* synthetic */ State[] ENUM$VALUES;
-        public static final /* enum */ State OPEN;
-
-        static {
-            OPEN = new State("OPEN", 0);
-            CLOSED = new State("CLOSED", 1);
-            DISCONNECTED = new State("DISCONNECTED", 2);
-            State[] arrstate = new State[]{OPEN, CLOSED, DISCONNECTED};
-            ENUM$VALUES = arrstate;
-        }
-
-        private State(String string3, int n2) {
-            super(string2, n);
-        }
-
-        public static State valueOf(String string2) {
-            return (State)Enum.valueOf((Class)State.class, (String)string2);
-        }
-
-        public static State[] values() {
-            State[] arrstate = ENUM$VALUES;
-            int n = arrstate.length;
-            State[] arrstate2 = new State[n];
-            System.arraycopy((Object)arrstate, (int)0, (Object)arrstate2, (int)0, (int)n);
-            return arrstate2;
-        }
-    }
-
+	@Override
+	synchronized public void close() {
+		if (state_ == State.CLOSED) {
+			throw new IllegalStateException("Trying to use a closed resouce");
+		} else if (state_ == State.DISCONNECTED) {
+			state_ = State.CLOSED;
+			return;
+		}
+		state_ = State.CLOSED;
+		ioio_.removeDisconnectListener(this);
+	}
+	
+	protected synchronized void checkState() throws ConnectionLostException {
+		if (state_ == State.CLOSED) {
+			throw new IllegalStateException("Trying to use a closed resouce");
+		} else if (state_ == State.DISCONNECTED) {
+			throw new ConnectionLostException();
+		}
+	}
 }
-

@@ -1,108 +1,108 @@
 /*
- * Decompiled with CFR 0_110.
+ * Copyright 2011 Ytai Ben-Tsvi. All rights reserved.
+ *  
  * 
- * Could not load the following classes:
- *  android.util.Log
- *  java.io.IOException
- *  java.io.InputStream
- *  java.io.OutputStream
- *  java.lang.String
+ * Redistribution and use in source and binary forms, with or without modification, are
+ * permitted provided that the following conditions are met:
+ * 
+ *    1. Redistributions of source code must retain the above copyright notice, this list of
+ *       conditions and the following disclaimer.
+ * 
+ *    2. Redistributions in binary form must reproduce the above copyright notice, this list
+ *       of conditions and the following disclaimer in the documentation and/or other materials
+ *       provided with the distribution.
+ * 
+ * THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+ * FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL ARSHAN POURSOHI OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+ * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * 
+ * The views and conclusions contained in the software and documentation are those of the
+ * authors and should not be interpreted as representing official policies, either expressed
+ * or implied.
  */
 package ioio.lib.impl;
 
-import android.util.Log;
+import ioio.lib.api.IOIO;
 import ioio.lib.api.Uart;
 import ioio.lib.api.exception.ConnectionLostException;
-import ioio.lib.impl.AbstractResource;
-import ioio.lib.impl.FlowControlledOutputStream;
-import ioio.lib.impl.IOIOImpl;
-import ioio.lib.impl.IOIOProtocol;
-import ioio.lib.impl.IncomingState;
-import ioio.lib.impl.QueueInputStream;
+import ioio.lib.impl.FlowControlledOutputStream.Sender;
+import ioio.lib.impl.IncomingState.DataModuleListener;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-class UartImpl
-extends AbstractResource
-implements Uart,
-FlowControlledOutputStream.Sender,
-IncomingState.DataModuleListener {
-    private static final int MAX_PACKET = 64;
-    private final QueueInputStream incoming_;
-    private final FlowControlledOutputStream outgoing_;
-    private final int rxPinNum_;
-    private final int txPinNum_;
-    private final int uartNum_;
+import android.util.Log;
 
-    public UartImpl(IOIOImpl iOIOImpl, int n, int n2, int n3) throws ConnectionLostException {
-        super(iOIOImpl);
-        this.outgoing_ = new FlowControlledOutputStream((FlowControlledOutputStream.Sender)this, 64);
-        this.incoming_ = new QueueInputStream();
-        this.uartNum_ = n3;
-        this.rxPinNum_ = n2;
-        this.txPinNum_ = n;
-    }
+class UartImpl extends AbstractResource implements DataModuleListener, Sender, Uart {
+	private static final int MAX_PACKET = 64;
+	
+	private final int uartNum_;
+	private final int rxPinNum_;
+	private final int txPinNum_;
+	private final FlowControlledOutputStream outgoing_ = new FlowControlledOutputStream(this, MAX_PACKET);
+	private final QueueInputStream incoming_ = new QueueInputStream();
+	
+	public UartImpl(IOIOImpl ioio, int txPin, int rxPin, int uartNum) throws ConnectionLostException {
+		super(ioio);
+		uartNum_ = uartNum;
+		rxPinNum_ = rxPin;
+		txPinNum_ = txPin;
+	}
 
-    @Override
-    public void close() {
-        UartImpl uartImpl = this;
-        synchronized (uartImpl) {
-            super.close();
-            this.incoming_.close();
-            this.outgoing_.close();
-            this.ioio_.closeUart(this.uartNum_);
-            if (this.rxPinNum_ != -1) {
-                this.ioio_.closePin(this.rxPinNum_);
-            }
-            if (this.txPinNum_ != -1) {
-                this.ioio_.closePin(this.txPinNum_);
-            }
-            return;
-        }
-    }
+	@Override
+	public void dataReceived(byte[] data, int size) {
+		incoming_.write(data, size);
+	}
 
-    @Override
-    public void dataReceived(byte[] arrby, int n) {
-        this.incoming_.write(arrby, n);
-    }
+	@Override
+	public void send(byte[] data, int size) {
+		try {
+			ioio_.protocol_.uartData(uartNum_, size, data);
+		} catch (IOException e) {
+			Log.e("UartImpl", e.getMessage());
+		}
+	}
 
-    @Override
-    public void disconnected() {
-        UartImpl uartImpl = this;
-        synchronized (uartImpl) {
-            super.disconnected();
-            this.incoming_.kill();
-            this.outgoing_.close();
-            return;
-        }
-    }
+	@Override
+	synchronized public void close() {
+		super.close();
+		incoming_.close();
+		outgoing_.close();
+		ioio_.closeUart(uartNum_);
+		if (rxPinNum_ != IOIO.INVALID_PIN) {
+			ioio_.closePin(rxPinNum_);
+		}
+		if (txPinNum_ != IOIO.INVALID_PIN) {
+			ioio_.closePin(txPinNum_);
+		}
+	}
+	
+	@Override
+	synchronized public void disconnected() {
+		super.disconnected();
+		incoming_.kill();
+		outgoing_.close();
+	}
 
-    @Override
-    public InputStream getInputStream() {
-        return this.incoming_;
-    }
+	@Override
+	public InputStream getInputStream() {
+		return incoming_;
+	}
 
-    @Override
-    public OutputStream getOutputStream() {
-        return this.outgoing_;
-    }
+	@Override
+	public OutputStream getOutputStream() {
+		return outgoing_;
+	}
 
-    @Override
-    public void reportAdditionalBuffer(int n) {
-        this.outgoing_.readyToSend(n);
-    }
-
-    @Override
-    public void send(byte[] arrby, int n) {
-        try {
-            this.ioio_.protocol_.uartData(this.uartNum_, n, arrby);
-            return;
-        }
-        catch (IOException var3_3) {
-            Log.e((String)"UartImpl", (String)var3_3.getMessage());
-            return;
-        }
-    }
+	@Override
+	public void reportAdditionalBuffer(int bytesRemaining) {
+		outgoing_.readyToSend(bytesRemaining);
+	}
 }
-
