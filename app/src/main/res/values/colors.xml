@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+<color name="apps_menu">#ff8bc53f</color>
+<color name="games_menu">#fff6921e</color>
+<color name="search_menu">#ffeb008b</color>
+<color name="my_apps_menu">#ff00adee</color>
+<color name="seperator">#ffa6a8a8</color>
+<color name="basescroll">#fff1f1f2</color>
+<color name="bg_supstar">#ff3f3f41</color>
+<color name="orange">#fff16d23</color>
+<color name="white">#ffffffff</color>
+<color name="black">#ff000000</color>
+<color name="brown">#ffa52a2a</color>
+<color name="purple">#ff800080</color>
+<color name="blue">#ff0000ff</color>
+<color name="cyan">#ff25a4db</color>
+<color name="gray">#ffcacaca</color>
+<color name="saddlebrown">#ff8b4513</color>
+<color name="silver">#ffe0e2e5</color>
+<color name="blueviolet">#ff3f0051</color>
+</resources>

@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android" android:orientation="vertical" android:id="@id/FrameLayout_background" android:background="@drawable/bg_blue" android:layout_width="fill_parent" android:layout_height="fill_parent">
+	<include android:layout_width="fill_parent" android:layout_height="wrap_content" layout="@layout/header_menu" />
+	<LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginLeft="200.0dip" android:layout_marginTop="40.0dip">
+		<ImageView android:layout_gravity="center_horizontal" android:id="@id/logoImage" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="10.0dip" />
+		<TextView android:textAppearance="?android:textAppearanceLarge" android:textSize="40.0sp" android:textStyle="bold" android:textColor="@color/black" android:layout_gravity="center_horizontal" android:id="@id/check_text_checkInfo" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="กรุณาตรวจสอบข้อมูล" />
+		<LinearLayout android:layout_gravity="center_horizontal" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="10.0dip">
+			<EditText android:textSize="26.0sp" android:textStyle="bold" android:layout_gravity="center_horizontal" android:id="@id/phonenumber" android:layout_width="wrap_content" android:layout_height="wrap_content" android:ems="10" android:layout_weight="1.0" android:inputType="number" />
+		</LinearLayout>
+		<LinearLayout android:layout_gravity="center" android:layout_width="wrap_content" android:layout_height="fill_parent" android:layout_marginTop="10.0dip">
+			<TextView android:textAppearance="?android:textAppearanceLarge" android:textSize="40.0sp" android:textStyle="bold" android:textColor="@color/black" android:id="@id/check_text_price_refill" android:layout_width="350.0dip" android:layout_height="wrap_content" android:text="ราคาที่เติม" />
+			<TextView android:textAppearance="?android:textAppearanceLarge" android:textSize="26.0sp" android:textStyle="bold" android:textColor="@color/black" android:gravity="right" android:layout_gravity="center_vertical" android:id="@id/textView1" android:layout_width="140.0dip" android:layout_height="wrap_content" android:layout_marginRight="3.0dip" android:text="30" />
+			<TextView android:textAppearance="?android:textAppearanceLarge" android:textSize="40.0sp" android:textStyle="bold" android:textColor="@color/black" android:id="@id/check_text_bath0" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="บาท" />
+		</LinearLayout>
+		<LinearLayout android:layout_gravity="center" android:layout_width="wrap_content" android:layout_height="fill_parent" android:layout_marginTop="10.0dip">
+			<TextView android:textAppearance="?android:textAppearanceLarge" android:textSize="40.0sp" android:textStyle="bold" android:textColor="@color/black" android:id="@id/check_text_price_box" android:layout_width="350.0dip" android:layout_height="wrap_content" android:text="ค่าบริการตู้" />
+			<TextView android:textAppearance="?android:textAppearanceLarge" android:textSize="26.0sp" android:textStyle="bold" android:textColor="@color/black" android:gravity="right" android:id="@id/textView2" android:layout_width="140.0dip" android:layout_height="wrap_content" android:layout_marginRight="3.0dip" android:text="80" />
+			<TextView android:textAppearance="?android:textAppearanceLarge" android:textSize="40.0sp" android:textStyle="bold" android:textColor="@color/black" android:id="@id/check_text_bath1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="บาท" />
+		</LinearLayout>
+		<LinearLayout android:layout_gravity="center" android:layout_width="wrap_content" android:layout_height="fill_parent" android:layout_marginTop="10.0dip">
+			<TextView android:textAppearance="?android:textAppearanceLarge" android:textSize="40.0sp" android:textStyle="bold" android:textColor="@color/black" android:id="@id/check_text_price_credit" android:layout_width="350.0dip" android:layout_height="wrap_content" android:text="เครดิสเดิม" />
+			<TextView android:textAppearance="?android:textAppearanceLarge" android:textSize="26.0sp" android:textStyle="bold" android:textColor="@color/black" android:gravity="right" android:id="@id/machineStatus" android:layout_width="140.0dip" android:layout_height="wrap_content" android:layout_marginRight="3.0dip" android:text="100" />
+			<TextView android:textAppearance="?android:textAppearanceLarge" android:textSize="40.0sp" android:textStyle="bold" android:textColor="@color/black" android:id="@id/check_text_bath2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="บาท" />
+		</LinearLayout>
+		<LinearLayout android:layout_gravity="center" android:layout_width="wrap_content" android:layout_height="fill_parent" android:layout_marginTop="10.0dip">
+			<TextView android:textAppearance="?android:textAppearanceLarge" android:textSize="40.0sp" android:textStyle="bold" android:textColor="@color/black" android:id="@id/check_text_price_coin" android:layout_width="350.0dip" android:layout_height="wrap_content" android:text="ต้องหยอดเหรียญ" />
+			<TextView android:textAppearance="?android:textAppearanceLarge" android:textSize="26.0sp" android:textStyle="bold" android:textColor="@color/black" android:gravity="right" android:id="@id/textView4" android:layout_width="140.0dip" android:layout_height="wrap_content" android:layout_marginRight="3.0dip" android:text="100" />
+			<TextView android:textAppearance="?android:textAppearanceLarge" android:textSize="40.0sp" android:textStyle="bold" android:textColor="@color/black" android:id="@id/check_text_bath3" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="บาท" />
+		</LinearLayout>
+		<TextView android:textAppearance="?android:textAppearanceSmall" android:textSize="40.0sp" android:textStyle="bold" android:textColor="@color/black" android:layout_gravity="center" android:id="@id/check_text_check_totalmoney" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="10.0dip" android:layout_marginTop="30.0dip" android:layout_marginRight="10.0dip" android:text="ตรวจสอบยอดเงินและเตรียมเงินให้พร้อมกรุณากดชำระเงิน" />
+	</LinearLayout>
+	<FrameLayout android:layout_gravity="bottom|center" android:layout_width="wrap_content" android:layout_height="wrap_content">
+		<include android:layout_width="wrap_content" android:layout_height="wrap_content" layout="@layout/footer_menu" />
+	</FrameLayout>
+</FrameLayout>

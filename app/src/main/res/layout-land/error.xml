@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android" android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent">
+	<include android:layout_width="fill_parent" android:layout_height="wrap_content" layout="@layout/header_menu" />
+	<FrameLayout android:background="@color/white" android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_marginTop="80.0dip">
+		<ImageView android:id="@id/background_imageview" android:layout_width="fill_parent" android:layout_height="fill_parent" android:src="@drawable/bg_blue" android:scaleType="fitXY" />
+		<FrameLayout android:layout_gravity="center" android:background="@color/white" android:layout_width="fill_parent" android:layout_height="fill_parent">
+			<TextView android:textAppearance="?android:textAppearanceSmall" android:textSize="60.0sp" android:textStyle="bold" android:textColor="@color/black" android:gravity="center" android:layout_gravity="center" android:id="@id/textError" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginBottom="100.0dip" android:text="Error Message" />
+			<Button android:textSize="30.0sp" android:textStyle="bold" android:textColor="@color/black" android:layout_gravity="center" android:id="@id/print" android:background="@drawable/bt_number" android:visibility="gone" android:layout_width="400.0dip" android:layout_height="wrap_content" android:text="ปริ้นใบยืนยันรายการ" android:hint="5" android:layout_weight="0.7" />
+		</FrameLayout>
+		<include android:layout_gravity="bottom|center" android:layout_width="fill_parent" android:layout_height="wrap_content" layout="@layout/footer_menu" />
+	</FrameLayout>
+</FrameLayout>

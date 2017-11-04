@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android" android:orientation="vertical" android:background="@drawable/bg_blue" android:layout_width="fill_parent" android:layout_height="fill_parent">
+	<FrameLayout android:background="@color/white" android:layout_width="fill_parent" android:layout_height="fill_parent" />
+	<include android:layout_width="fill_parent" android:layout_height="wrap_content" layout="@layout/header_menu" />
+	<LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="80.0dip">
+		<TextView android:textAppearance="?android:textAppearanceSmall" android:textSize="27.0sp" android:textStyle="bold" android:textColor="@color/black" android:id="@id/setmachine_text_seting" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="10.0dip" android:text="ตั้งค่าตู้เติมเงิน" />
+		<LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="10.0dip">
+			<TextView android:textAppearance="?android:textAppearanceSmall" android:textSize="17.0sp" android:textStyle="bold" android:textColor="@color/black" android:layout_gravity="center" android:id="@id/setmachine_text_partner_id" android:layout_width="230.0dip" android:layout_height="wrap_content" android:layout_marginLeft="10.0dip" android:text="PARTNER ID" />
+			<EditText android:id="@id/EditText05" android:focusable="false" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginRight="10.0dip" android:ems="10" android:singleLine="true" android:layout_weight="1.0" />
+		</LinearLayout>
+		<LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="10.0dip">
+			<TextView android:textAppearance="?android:textAppearanceSmall" android:textSize="17.0sp" android:textStyle="bold" android:textColor="@color/black" android:layout_gravity="center" android:id="@id/setmachine_text_hardware_sn" android:layout_width="230.0dip" android:layout_height="wrap_content" android:layout_marginLeft="10.0dip" android:text="HARDWARE SN" />
+			<EditText android:id="@id/month" android:focusable="false" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginRight="10.0dip" android:ems="10" android:singleLine="true" android:layout_weight="1.0" />
+		</LinearLayout>
+		<LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="10.0dip">
+			<TextView android:textAppearance="?android:textAppearanceSmall" android:textSize="17.0sp" android:textStyle="bold" android:textColor="@color/black" android:layout_gravity="center" android:id="@id/setmachine_text_hardware_au" android:layout_width="230.0dip" android:layout_height="wrap_content" android:layout_marginLeft="10.0dip" android:text="HARDWARE AUTHORIZATION" />
+		</LinearLayout>
+		<EditText android:id="@id/day" android:focusable="false" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginRight="10.0dip" android:ems="10" android:singleLine="true" android:layout_weight="1.0">
+			<requestFocus />
+		</EditText>
+		<FrameLayout android:layout_width="fill_parent" android:layout_height="wrap_content">
+			<CheckBox android:textColor="@color/black" android:id="@id/setting_AUTORESET" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Auto Reset Money" />
+			<CheckBox android:textColor="@color/black" android:id="@id/setting_ict" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="40.0dip" android:text="Bill Acceptor ICT" />
+			<CheckBox android:textColor="@color/black" android:id="@id/setting_debug" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="80.0dip" android:text="TestMode" />
+			<LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginLeft="200.0dip" android:weightSum="3.0">
+				<Button android:textSize="18.0sp" android:textStyle="bold" android:id="@id/SetMechine_SMS" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="10.0dip" android:text="SMS" android:layout_weight="1.0" />
+				<Button android:textSize="18.0sp" android:textStyle="bold" android:id="@id/ExitSetting" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="10.0dip" android:text="Setting" android:layout_weight="1.0" />
+				<Button android:textSize="18.0sp" android:textStyle="bold" android:textColor="@color/brown" android:id="@id/Button12" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="10.0dip" android:text="Update" android:layout_weight="1.0" />
+			</LinearLayout>
+			<LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginLeft="200.0dip" android:layout_marginTop="60.0dip" android:weightSum="3.0">
+				<Button android:textSize="18.0sp" android:textStyle="bold" android:id="@id/SetupUSSD" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="10.0dip" android:text="setussd" android:layout_weight="1.0" />
+				<Button android:textSize="18.0sp" android:textStyle="bold" android:id="@id/testcallUSSD" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="10.0dip" android:text="test ussd Money" android:layout_weight="1.0" />
+				<Button android:textSize="18.0sp" android:textStyle="bold" android:id="@id/testcallUSSD2" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="10.0dip" android:text="test ussd Phone" android:layout_weight="1.0" />
+			</LinearLayout>
+		</FrameLayout>
+	</LinearLayout>
+	<LinearLayout android:layout_gravity="bottom|center" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="10.0dip">
+		<Button android:textStyle="bold" android:id="@id/fake_click" android:background="@drawable/bt_test_network_th" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+		<Button android:id="@id/button2" android:background="@drawable/bt_record_th" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+		<Button android:id="@id/button3" android:background="@drawable/bt_back_th" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+	</LinearLayout>
+	<FrameLayout android:layout_gravity="bottom|center" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content">
+		<include android:layout_width="wrap_content" android:layout_height="wrap_content" layout="@layout/footer_menu" />
+	</FrameLayout>
+</FrameLayout>

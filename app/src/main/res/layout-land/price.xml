@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android" android:orientation="vertical" android:id="@id/FrameLayout_background" android:background="@drawable/bg_blue" android:layout_width="fill_parent" android:layout_height="fill_parent">
+	<FrameLayout android:background="@color/white" android:layout_width="fill_parent" android:layout_height="fill_parent" />
+	<include android:layout_width="fill_parent" android:layout_height="wrap_content" layout="@layout/header_menu" />
+	<LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="80.0dip">
+		<TextView android:textAppearance="?android:textAppearanceLarge" android:textSize="40.0sp" android:textStyle="bold" android:textColor="@color/black" android:layout_gravity="left" android:id="@id/numpad_text_select_price" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="80.0dip" android:text="xoxoxoxo" />
+		<LinearLayout android:layout_gravity="center" android:orientation="vertical" android:id="@id/priceLayout" android:layout_width="wrap_content" android:layout_height="wrap_content">
+			<LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" />
+			<LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" />
+			<LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" />
+			<LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" />
+		</LinearLayout>
+	</LinearLayout>
+	<FrameLayout android:layout_gravity="bottom|center|right" android:layout_width="fill_parent" android:layout_height="wrap_content">
+		<include android:layout_width="fill_parent" android:layout_height="wrap_content" layout="@layout/footer_menu" />
+	</FrameLayout>
+</FrameLayout>

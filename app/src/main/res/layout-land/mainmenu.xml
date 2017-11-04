@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android" android:orientation="vertical" android:id="@id/FrameLayout_background" android:layout_width="fill_parent" android:layout_height="fill_parent">
+	<include android:layout_width="fill_parent" android:layout_height="fill_parent" layout="@layout/header_menu" />
+	<FrameLayout android:background="@color/white" android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_marginTop="80.0dip" android:layout_marginBottom="30.0dip">
+		<LinearLayout android:layout_gravity="center_horizontal" android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="wrap_content">
+			<Button android:id="@id/button1" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="300.0dip" android:text="Button" android:layout_weight="1.0" />
+			<TextView android:textAppearance="?android:textAppearanceLarge" android:textSize="48.0sp" android:textStyle="bold" android:layout_gravity="center_horizontal" android:id="@id/mainTitle" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="เลือกบริการที่ท่านต้องการ" android:layout_weight="1.0" />
+			<LinearLayout android:layout_gravity="center_horizontal" android:layout_width="wrap_content" android:layout_height="0.0dip" android:layout_weight="1.0">
+				<FrameLayout android:layout_width="wrap_content" android:layout_height="fill_parent" android:layout_marginTop="10.0dip" android:layout_weight="1.0">
+					<Button android:id="@id/Button01" android:tag="1" android:background="@drawable/mobile_topup_th" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_weight="1.0" />
+					<TextView android:textSize="18.0sp" android:textStyle="bold" android:textColor="@color/black" android:layout_gravity="bottom|center" android:id="@id/textView1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginBottom="10.0dip" android:text="hellotext" />
+				</FrameLayout>
+				<FrameLayout android:layout_width="wrap_content" android:layout_height="fill_parent" android:layout_marginLeft="30.0dip" android:layout_marginTop="10.0dip" android:layout_weight="1.0">
+					<Button android:id="@id/Button02" android:tag="5" android:background="@drawable/game_th" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_weight="1.0" />
+					<TextView android:textSize="18.0sp" android:textStyle="bold" android:textColor="@color/black" android:layout_gravity="bottom|center" android:id="@id/textView2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginBottom="10.0dip" android:text="hellotext" />
+				</FrameLayout>
+				<FrameLayout android:layout_width="wrap_content" android:layout_height="fill_parent" android:layout_marginLeft="30.0dip" android:layout_marginTop="10.0dip" android:layout_weight="1.0">
+					<Button android:id="@id/Button03" android:tag="3" android:background="@drawable/card_th" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+					<TextView android:textSize="18.0sp" android:textStyle="bold" android:textColor="@color/black" android:layout_gravity="bottom|center" android:id="@id/textView3" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginBottom="10.0dip" android:text="hellotext" />
+				</FrameLayout>
+			</LinearLayout>
+			<LinearLayout android:layout_gravity="center_horizontal" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_weight="2.0">
+				<FrameLayout android:layout_width="wrap_content" android:layout_height="fill_parent" android:layout_marginTop="10.0dip" android:layout_weight="1.0">
+					<Button android:id="@id/Button04" android:tag="4" android:background="@drawable/billing_th" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_weight="1.0" />
+					<TextView android:textSize="18.0sp" android:textStyle="bold" android:textColor="@color/black" android:layout_gravity="bottom|center" android:id="@id/textView4" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginBottom="10.0dip" android:text="hellotext" />
+				</FrameLayout>
+				<FrameLayout android:layout_width="wrap_content" android:layout_height="fill_parent" android:layout_marginLeft="30.0dip" android:layout_marginTop="10.0dip" android:layout_weight="1.0">
+					<Button android:id="@id/Button06" android:tag="1" android:background="@drawable/billing_other_th" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_weight="1.0" />
+					<TextView android:textSize="18.0sp" android:textStyle="bold" android:textColor="@color/black" android:layout_gravity="bottom|center" android:id="@id/textView6" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginBottom="10.0dip" android:text="hellotext" />
+				</FrameLayout>
+				<FrameLayout android:layout_width="wrap_content" android:layout_height="fill_parent" android:layout_marginLeft="30.0dip" android:layout_marginTop="10.0dip" android:layout_weight="1.0">
+					<Button android:id="@id/Button07" android:background="@drawable/barcode_th" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_weight="1.0" />
+					<TextView android:textSize="18.0sp" android:textStyle="bold" android:textColor="@color/black" android:layout_gravity="bottom|center" android:id="@id/textView7" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginBottom="10.0dip" android:text="hellotext" />
+				</FrameLayout>
+			</LinearLayout>
+		</LinearLayout>
+	</FrameLayout>
+	<LinearLayout android:orientation="horizontal" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="100.0dip">
+		<LinearLayout android:layout_gravity="center" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginBottom="10.0dip">
+			<Button android:id="@id/Button05" android:background="@drawable/how_to_use_th" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+			<Button android:id="@id/Button11" android:tag="11" android:background="@drawable/report_th" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+		</LinearLayout>
+	</LinearLayout>
+	<include android:layout_gravity="bottom" android:layout_width="fill_parent" android:layout_height="wrap_content" layout="@layout/footer_menu" />
+</FrameLayout>

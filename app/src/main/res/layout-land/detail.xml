@@ -1,0 +1,51 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android" android:orientation="vertical" android:background="@drawable/bg_blue" android:layout_width="fill_parent" android:layout_height="fill_parent">
+	<include android:layout_width="fill_parent" android:layout_height="wrap_content" layout="@layout/header_menu" />
+	<FrameLayout android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_marginTop="80.0dip">
+		<FrameLayout android:background="@color/white" android:layout_width="fill_parent" android:layout_height="fill_parent" />
+		<LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent">
+			<TextView android:textAppearance="?android:textAppearanceSmall" android:textSize="40.0sp" android:textStyle="bold" android:textColor="@color/black" android:layout_gravity="center_horizontal" android:id="@id/detail_text_topic" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="10.0dip" android:text="รายละเอียดตู้เติมเงิน" />
+			<LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="20.0dip" android:weightSum="2.0">
+				<LinearLayout android:orientation="vertical" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_weight="1.0">
+					<LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content">
+						<TextView android:textAppearance="?android:textAppearanceSmall" android:textSize="36.0sp" android:textStyle="bold" android:textColor="@color/black" android:id="@id/detail_textview0" android:layout_width="220.0dip" android:layout_height="wrap_content" android:text="ตู้เติมเงินหมายเลข" />
+						<TextView android:textAppearance="?android:textAppearanceSmall" android:textSize="22.0sp" android:textStyle="bold" android:textColor="@color/black" android:id="@id/detail_text_value0" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="xoxoxoxoxo" />
+					</LinearLayout>
+					<LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="10.0dip">
+						<TextView android:textAppearance="?android:textAppearanceSmall" android:textSize="36.0sp" android:textStyle="bold" android:textColor="@color/black" android:id="@id/detail_textview1" android:layout_width="220.0dip" android:layout_height="wrap_content" android:text="firmware รุ่น" />
+						<TextView android:textAppearance="?android:textAppearanceSmall" android:textSize="22.0sp" android:textStyle="bold" android:textColor="@color/black" android:id="@id/detail_text_value1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="xoxoxoxoxo" />
+					</LinearLayout>
+					<LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="10.0dip">
+						<TextView android:textAppearance="?android:textAppearanceSmall" android:textSize="36.0sp" android:textStyle="bold" android:textColor="@color/black" android:id="@id/detail_textview2" android:layout_width="220.0dip" android:layout_height="wrap_content" android:text="เงินเครดิสคงเหลือ" />
+						<TextView android:textAppearance="?android:textAppearanceSmall" android:textSize="22.0sp" android:textStyle="bold" android:textColor="@color/black" android:id="@id/detail_text_value2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="xoxoxoxoxo" />
+					</LinearLayout>
+					<LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="10.0dip">
+						<TextView android:textAppearance="?android:textAppearanceSmall" android:textSize="36.0sp" android:textStyle="bold" android:textColor="@color/black" android:id="@id/detail_textview3" android:layout_width="220.0dip" android:layout_height="wrap_content" android:text="เงินในกล่องเก็บเงิน" />
+						<TextView android:textAppearance="?android:textAppearanceSmall" android:textSize="22.0sp" android:textStyle="bold" android:textColor="@color/black" android:id="@id/detail_text_value3" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="xoxoxoxoxo" />
+					</LinearLayout>
+				</LinearLayout>
+				<LinearLayout android:orientation="vertical" android:layout_width="wrap_content" android:layout_height="fill_parent" android:layout_weight="1.0">
+					<LinearLayout android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="10.0dip">
+						<TextView android:textAppearance="?android:textAppearanceSmall" android:textSize="36.0sp" android:textColor="@color/black" android:id="@id/detail_textview4" android:layout_width="220.0dip" android:layout_height="wrap_content" android:text="เติมเงินไปแล้ว" />
+						<TextView android:textAppearance="?android:textAppearanceSmall" android:textSize="22.0sp" android:textStyle="bold" android:textColor="@color/black" android:id="@id/detail_text_value4" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="xoxoxoxoxo" />
+					</LinearLayout>
+					<LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="10.0dip">
+						<TextView android:textAppearance="?android:textAppearanceSmall" android:textSize="36.0sp" android:textColor="@color/black" android:id="@id/detail_textview5" android:layout_width="220.0dip" android:layout_height="wrap_content" android:text="METER" />
+						<TextView android:textAppearance="?android:textAppearanceSmall" android:textSize="22.0sp" android:textStyle="bold" android:textColor="@color/black" android:id="@id/detail_text_value5" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="xoxoxoxoxo" />
+					</LinearLayout>
+					<LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="10.0dip">
+						<TextView android:textAppearance="?android:textAppearanceSmall" android:textSize="36.0sp" android:textColor="@color/black" android:id="@id/TextView03" android:layout_width="220.0dip" android:layout_height="wrap_content" android:text="Ref1" />
+						<TextView android:textAppearance="?android:textAppearanceSmall" android:textSize="22.0sp" android:textStyle="bold" android:textColor="@color/black" android:id="@id/detail_text_value6" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="xoxoxoxoxo" />
+					</LinearLayout>
+					<LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="10.0dip">
+						<TextView android:textAppearance="?android:textAppearanceSmall" android:textSize="36.0sp" android:textColor="@color/black" android:id="@id/TextView01" android:layout_width="220.0dip" android:layout_height="wrap_content" android:text="Ref2" />
+						<TextView android:textAppearance="?android:textAppearanceSmall" android:textSize="22.0sp" android:textStyle="bold" android:textColor="@color/black" android:id="@id/detail_text_value7" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="xoxoxoxoxo" />
+					</LinearLayout>
+				</LinearLayout>
+			</LinearLayout>
+		</LinearLayout>
+		<FrameLayout android:layout_gravity="bottom|center" android:layout_width="fill_parent" android:layout_height="wrap_content">
+			<include android:layout_width="fill_parent" android:layout_height="wrap_content" layout="@layout/footer_menu" />
+		</FrameLayout>
+	</FrameLayout>
+</FrameLayout>

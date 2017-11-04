@@ -1,0 +1,139 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@id/FrameLayout_background"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/bg_blue"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="30.0dip">
+
+            <Button
+                android:id="@id/Button05"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/how_to_use_th"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@id/Button11"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/report_th" />
+        </LinearLayout>
+
+        <include
+            layout="@layout/footer_menu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="vertical">
+
+            <include
+                layout="@layout/header_menu"
+                android:layout_width="wrap_content"
+                android:layout_height="0.0dip"
+                android:layout_gravity="center"
+                android:layout_weight="1.0" />
+
+            <TextView
+                android:id="@id/textView1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="1.0"
+                android:text="เลือกบริการที่ท่านต้องการ"
+                android:textAppearance="?android:textAppearanceLarge"
+                android:textColor="@color/black"
+                android:textSize="28.0sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@id/button1"
+                android:layout_width="fill_parent"
+                android:layout_height="300.0dip"
+                android:layout_weight="1.0"
+                android:text="Button"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="0.0dip"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="1.0">
+
+                <Button
+                    android:id="@id/Button01"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1.0"
+                    android:background="@drawable/mobile_topup_th" />
+
+                <Button
+                    android:id="@id/Button02"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1.0"
+                    android:background="@drawable/game_th" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="1.0">
+
+                <Button
+                    android:id="@id/Button03"
+                    android:layout_width="0.0dip"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1.0"
+                    android:background="@drawable/card_th" />
+
+                <Button
+                    android:id="@id/Button04"
+                    android:layout_width="0.0dip"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1.0"
+                    android:background="@drawable/billing_th_on" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.0">
+
+                <Button
+                    android:id="@id/Button06"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/billing_other_th" />
+
+                <Button
+                    android:id="@id/Button07"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/barcode_th" />
+            </LinearLayout>
+        </LinearLayout>
+    </FrameLayout>
+</FrameLayout>

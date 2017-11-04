@@ -1,0 +1,188 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/bg_blue"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <include
+            layout="@layout/header_menu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="vertical">
+
+            <FrameLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
+
+                <CheckBox
+                    android:id="@id/checkBoxNumSound"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:text="เสียงเบอร์โทร"
+                    android:textColor="@color/black" />
+
+                <TextView
+                    android:id="@id/selectsetting_text_topic"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10.0dip"
+                    android:text="เลือกเมนูจัดการ"
+                    android:textAppearance="?android:textAppearanceSmall"
+                    android:textColor="@color/black"
+                    android:textSize="25.0sp"
+                    android:textStyle="bold" />
+            </FrameLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10.0dip">
+
+                <Button
+                    android:id="@id/Button01"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bt_menu"
+                    android:text="ดูรายละเอียดตู้"
+                    android:textSize="18.0sp"
+                    android:textStyle="bold" />
+
+                <Button
+                    android:id="@id/Button02"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bt_menu"
+                    android:text="เปิดตู้เติมเงิน"
+                    android:textSize="18.0sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <Button
+                    android:id="@id/Button03"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bt_menu"
+                    android:text="รายงานเติมเงิน"
+                    android:textSize="18.0sp"
+                    android:textStyle="bold" />
+
+                <Button
+                    android:id="@id/Button04"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bt_menu"
+                    android:text="Clear ยอดเงิน"
+                    android:textSize="18.0sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <Button
+                    android:id="@id/Button05"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bt_menu"
+                    android:text="ตั้งค่าตู้เติมเงิน"
+                    android:textSize="18.0sp"
+                    android:textStyle="bold" />
+
+                <Button
+                    android:id="@id/Button08"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bt_menu"
+                    android:text="ReBoot"
+                    android:textSize="18.0sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <Button
+                    android:id="@id/Button07"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bt_menu"
+                    android:text="ออกจากระบบ"
+                    android:textSize="18.0sp"
+                    android:textStyle="bold" />
+
+                <Button
+                    android:id="@id/Button11"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bt_menu"
+                    android:text="ลบ Log"
+                    android:textSize="18.0sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@id/textView1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sound"
+                android:textAppearance="?android:textAppearanceMedium" />
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="2.0">
+
+                <SeekBar
+                    android:id="@id/seekBar1"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="10.0dip"
+                    android:layout_weight="1.0" />
+
+                <SeekBar
+                    android:id="@id/seekBar2"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10.0dip"
+                    android:layout_weight="1.0" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <Button
+        android:id="@id/Button09"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center"
+        android:background="@drawable/bt_the_first_page_th" />
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center"
+        android:visibility="gone">
+
+        <include
+            layout="@layout/footer_menu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </FrameLayout>
+</FrameLayout>

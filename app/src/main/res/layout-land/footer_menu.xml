@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:orientation="vertical" android:id="@id/AllFooter" android:layout_width="fill_parent" android:layout_height="wrap_content">
+	<LinearLayout android:layout_gravity="center" android:id="@id/Footer" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginBottom="-30.0dip">
+		<Button android:id="@id/footer_Back" android:tag="back" android:background="@drawable/bt_back_th" android:layout_width="0.0dip" android:layout_height="wrap_content" android:layout_weight="1.0" />
+		<Button android:id="@id/footer_Cancel" android:tag="cancel" android:background="@drawable/bt_cancel_th" android:layout_width="0.0dip" android:layout_height="wrap_content" android:layout_weight="1.0" />
+		<Button android:id="@id/footer_Next" android:background="@drawable/bt_next_th" android:layout_width="0.0dip" android:layout_height="wrap_content" android:layout_weight="1.0" />
+	</LinearLayout>
+	<FrameLayout android:background="@color/orange" android:layout_width="fill_parent" android:layout_height="30.0dip">
+		<TextView android:textAppearance="?android:textAppearanceLarge" android:textColor="@color/white" android:layout_gravity="center_vertical" android:id="@id/footer_land_contac" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="60.0dip" android:text="Large Text" />
+		<TextView android:textAppearance="?android:textAppearanceLarge" android:textColor="@color/white" android:layout_gravity="center|right" android:id="@id/footer_land_version" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginRight="3.0dip" android:text="Large Text" />
+		<ImageView android:layout_gravity="center_vertical" android:id="@id/imageView3" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="3.0dip" android:src="@drawable/ic_foot_callcenter" />
+	</FrameLayout>
+	<FrameLayout android:layout_gravity="center" android:background="@color/orange" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="30.0dip">
+		<ImageView android:layout_gravity="center" android:id="@id/imageView2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@drawable/bg_version" />
+		<TextView android:textAppearance="?android:textAppearanceMedium" android:textSize="20.0sp" android:textStyle="bold" android:ellipsize="marquee" android:layout_gravity="center" android:id="@id/footer_text_scroll" android:focusable="true" android:focusableInTouchMode="true" android:layout_width="wrap_content" android:layout_height="wrap_content" android:scrollHorizontally="true" android:singleLine="true" android:marqueeRepeatLimit="marquee_forever" />
+	</FrameLayout>
+</LinearLayout>

@@ -1,0 +1,455 @@
+<?xml version="1.0" encoding="utf-8"?>
+<topup>
+  <message id="1" name="APP-NAME">
+    <thai>WORKS Online</thai>
+    <english>WORKS Online</english>
+  </message>
+  <message id="2" name="STATUS-ONLINE">
+    <thai>สถานะตู้เติมเงิน : ออนไลน์</thai>
+    <english>Status : Online</english>
+  </message>
+  <message id="3" name="STATUS-OFFLINE">
+    <thai>สถานะตู้เติมเงิน : ออฟไลน์</thai>
+    <english>Status : Offline</english>
+  </message>
+  <message id="4" name="TOUCH-START">
+    <thai>สัมผัสหน้าจอเพื่อเริ่มต้นใช้งาน</thai>
+    <english>Touch Screen to Start</english>
+  </message>
+  <message id="5" name="SELECT-SERVICE">
+    <thai>เลือกบริการที่ท่านต้องการ</thai>
+    <english>Select Service</english>
+  </message>
+  <message id="6" name="SELECT-NETWORK">
+    <thai>เลือกเครือข่ายที่ต้องการ</thai>
+    <english>Select your network</english>
+  </message>
+  <message id="7" name="SELECT-BRAND">
+    <thai>เลือกบริการที่ต้องการ</thai>
+    <english>Select Service</english>
+  </message>
+  <message id="8" name="SELECT-VIDEO">
+    <thai>เลือกวีดีโอที่ต้องการ</thai>
+    <english>Select Video</english>
+  </message>
+  <message id="9" name="MOBILE-NUMBER">
+    <thai>ระบุหมายเลขโทรศัพท์</thai>
+    <english>Enter your phone number</english>
+  </message>
+  <message id="10" name="AMOUNT-NEED">
+    <thai>เลือกราคาที่ต้องการเติม</thai>
+    <english>Select amount needed</english>
+  </message>
+  <message id="11" name="CHECKING-DATA">
+    <thai>กำลังตรวจสอบข้อมูล</thai>
+    <english>Checking information</english>
+  </message>
+  <message id="12" name="CHECK-DATA">
+    <thai>กรุณาตรวจสอบข้อมูล</thai>
+    <english>Check Information</english>
+  </message>
+  <message id="13" name="AMOUNT-PRICE">
+    <thai>ราคาที่เติม</thai>
+    <english>Select amount needed</english>
+  </message>
+  <message id="14" name="SERVICE-PRICE">
+    <thai>ค่าบริการตู้</thai>
+    <english>Service charge</english>
+  </message>
+  <message id="15" name="CREDIT-LATEST">
+    <thai>เครดิตเดิม</thai>
+    <english>Credit</english>
+  </message>
+  <message id="16" name="PAY-PRICE">
+    <thai>ต้องหยอดเงิน</thai>
+    <english>Insert amount</english>
+  </message>
+  <message id="17" name="BAHT">
+    <thai>บาท</thai>
+    <english>BAHT</english>
+  </message>
+  <message id="18" name="CHECK-AMOUNT">
+    <thai>ตรวจสอบยอดเงินและเตรียมเงินให้พร้อม</thai>
+    <english>Verify amount</english>
+  </message>
+  <message id="19" name="PRESS-PAY">
+    <thai>กรุณากด ชำระค่าบริการ</thai>
+    <english>Press pay</english>
+  </message>
+  <message id="20" name="PAY-AMOUNT">
+    <thai>ชำระค่าบริการ</thai>
+    <english>Payment</english>
+  </message>
+  <message id="21" name="PAY-IN">
+    <thai>หยอดเข้ามาแล้ว</thai>
+    <english>Amount paid</english>
+  </message>
+  <message id="22" name="PAY-REMAIN">
+    <thai>ต้องหยอดอีก</thai>
+    <english>Amount remaining</english>
+  </message>
+  <message id="23" name="PAYING">
+    <thai>กำลังเติมเงิน</thai>
+    <english>Amount paid</english>
+  </message>
+  <message id="24" name="TOPUP-TO">
+    <thai>เติมเงินระบบ</thai>
+    <english>Prepay system</english>
+  </message>
+  <message id="25" name="TOTAL">
+    <thai>จำนวน</thai>
+    <english>Total</english>
+  </message>
+  <message id="26" name="TOPUP-SUCCESS">
+    <thai>การเติมเงินเรียบร้อย</thai>
+    <english>Topup successful</english>
+  </message>
+  <message id="27" name="WAITING-SMS">
+    <thai>อีกซักครู่จะมี SMS แจ้งผลการเติมเงิน</thai>
+    <english>Credit amount sent by SMS</english>
+  </message>
+  <message id="28" name="CREDIT-BALANCE">
+    <thai>เครดิตคงเหลือ</thai>
+    <english>Balance of credit</english>
+  </message>
+  <message id="29" name="GET-CREDIT">
+    <thai>เก็บเงินเป็นเครดิตไว้</thai>
+    <english>Use credit</english>
+  </message>
+  <message id="30" name="CANCEL-TOPUP">
+    <thai>ยกเลิกการเติมเงิน</thai>
+    <english>Cancel transaction</english>
+  </message>
+  <message id="31" name="GET-PRICE">
+    <thai>ระบบจะเก็บเงิน</thai>
+    <english>???</english>
+  </message>
+  <message id="32" name="PRICT-CREDIT">
+    <thai>ที่หยอดเข้ามาเป็นเครดิตเอาไว้</thai>
+    <english>Retrieve credit</english>
+  </message>
+  <message id="33" name="GET-SUCCESS">
+    <thai>ระบบเก็บเงินแล้ว</thai>
+    <english>Retrieve success</english>
+  </message>
+  <message id="34" name="VIDEO-MOBILE">
+    <thai>สาธิตการเติมเงินมือถือ</thai>
+    <english>Mobile video demonstration</english>
+  </message>
+  <message id="35" name="VIDEO-GAME">
+    <thai>สาธิตการซื้อบัตรเงินสดบัตรเกม</thai>
+    <english>Game purchase demonstration</english>
+  </message>
+  <message id="36" name="VIDEO-PHONE">
+    <thai>สาธิตการซื้อบัตรโทรต่างประเทศ</thai>
+    <english>International calling card information</english>
+  </message>
+  <message id="37" name="VIDEO-REPORT">
+    <thai>สาธิตการแจ้งปัญหา</thai>
+    <english>Problem demonstration</english>
+  </message>
+  <message id="38" name="REPORT-PROBLEM">
+    <thai>ปัญหาที่พบ</thai>
+    <english>Problem report</english>
+  </message>
+  <message id="39" name="PROBLEM-PAY">
+    <thai>เติมเงินไม่เข้า ไม่ได้รับ SMS</thai>
+    <english>Payment problem</english>
+  </message>
+  <message id="40" name="PROBLEM-NUMBER">
+    <thai>เติมเงินผิดเบอร์</thai>
+    <english>Problem number</english>
+  </message>
+  <message id="41" name="PROBLEM-MACHINE">
+    <thai>เครื่องมีปัญหา</thai>
+    <english>Problem machine</english>
+  </message>
+  <message id="42" name="PROBLEM-RECOMMEND">
+    <thai>แนะนำติชม</thai>
+    <english>Recommendation</english>
+  </message>
+  <message id="43" name="REPORTING-PROBLEM">
+    <thai>กำลังแจ้งปัญหา</thai>
+    <english>Report a problem</english>
+  </message>
+  <message id="44" name="REPORT-SUCCESS">
+    <thai>ระบบรับแจ้งปัญหาแล้ว</thai>
+    <english>Report success</english>
+  </message>
+  <message id="45" name="REPORT-CHECKING">
+    <thai>เจ้าหน้าที่จะดำเนินการตรวจสอบต่อไป</thai>
+    <english>Check report</english>
+  </message>
+  <message id="46" name="KEY-PASSWORD1">
+    <thai>ระบุรหัสผ่านชุดที่</thai>
+    <english>enter password</english>
+  </message>
+  <message id="47" name="KEY-PASSWORD2">
+    <thai>ระบุรหัสผ่านชุดที่ 2</thai>
+    <english>enter password 2</english>
+  </message>
+  <message id="48" name="KEY-PASSWORD3">
+    <thai>ระบุรหัสผ่านชุดที่ 3</thai>
+    <english>enter password 3</english>
+  </message>
+  <message id="49" name="SELECT-SETTING">
+    <thai>เลือกเมนูจัดการ</thai>
+    <english>Choose setting</english>
+  </message>
+  <message id="50" name="INFO-MACHINE">
+    <thai>รายละเอียดตู้เติมเงิน</thai>
+    <english>Machine information</english>
+  </message>
+  <message id="51" name="MACHINE-NO">
+    <thai>ตู้เติมเงินหมายเลข</thai>
+    <english>Machine number</english>
+  </message>
+  <message id="52" name="FIRMWARE-VERSION">
+    <thai>Firmware รุ่น</thai>
+    <english>Firmware version</english>
+  </message>
+  <message id="53" name="PRICECREDIT-BALANCE">
+    <thai>เงินเครดิดคงเหลือ</thai>
+    <english>Credit balance</english>
+  </message>
+  <message id="54" name="PRICEBOX-BALANCE">
+    <thai>เงินในกล่องเก็บเงิน</thai>
+    <english>Machine balance</english>
+  </message>
+  <message id="55" name="PAYTOPUP-TOTAL">
+    <thai>เติมเงินไปแล้ว</thai>
+    <english>Total topped up</english>
+  </message>
+  <message id="56" name="QUALITY">
+    <thai>ครั้ง</thai>
+    <english>time</english>
+  </message>
+  <message id="57" name="FOR-OPEN">
+    <thai>เพื่อเปิดดูตู้เติมเงิน</thai>
+    <english>Open amchine</english>
+  </message>
+  <message id="58" name="OPEN-DOOR">
+    <thai>ตู้เติมเงินกำลังเปิดอยู่</thai>
+    <english>Open door</english>
+  </message>
+  <message id="59" name="LIST-HISTORY">
+    <thai>รายการเติมเงินย้อนหลัง</thai>
+    <english>History</english>
+  </message>
+  <message id="60" name="FOR-CLEAR">
+    <thai>เพื่อ Clear ยอดเงิน</thai>
+    <english>Clear balance</english>
+  </message>
+  <message id="61" name="CLEAR-SUCCESS">
+    <thai>Clear ยอดเงินของตู้เติมเงินเรียบร้อยแล้ว</thai>
+    <english>Clear success</english>
+  </message>
+  <message id="62" name="FOR-FIRMWARE">
+    <thai>เพื่อตรวจสอบ Firmware</thai>
+    <english>Check firmware version</english>
+  </message>
+  <message id="63" name="FIRMWARE-CURRENT">
+    <thai>Firmware ของคุณ</thai>
+    <english>Firmware installed version</english>
+  </message>
+  <message id="64" name="FIRMWARE-LATEST">
+    <thai>Firmware ล่าสุด</thai>
+    <english>Latest firmware version available</english>
+  </message>
+  <message id="65" name="FOR-MACHINE">
+    <thai>เพื่อแก้ไขรายละเอียดตู้</thai>
+    <english>Edit machine details</english>
+  </message>
+  <message id="66" name="CONFIG-MACHINE">
+    <thai>ตั้งค่าตู้เติมเงิน</thai>
+    <english>Configure machine</english>
+  </message>
+  <message id="67" name="CONNECT-FAIL">
+    <thai>การเชื่อมต่อผิดพลาดไม่สามารถทำรายการได้</thai>
+    <english>Connection failed</english>
+  </message>
+  <message id="68" name="PROCESS-FAIL">
+    <thai>การดำเนินการผิดพลาดไม่สามารถทำรายการได้</thai>
+    <english>Process failed</english>
+  </message>
+  <message id="69" name="MOBILE-FAIL">
+    <thai>เกิดความผิดพลาดหมายเลขโทรศัพท์ไม่ถูกต้อง</thai>
+    <english>Incorrect mobile number</english>
+  </message>
+  <message id="70" name="AMOUNT-FAIL">
+    <thai>เกิดความผิดพลาดยอดเติมเงินไม่ถูกต้อง</thai>
+    <english>Incorrect amount</english>
+  </message>
+  <message id="71" name="NETWORK-FAIL">
+    <thai>เกิดความผิดพลาดระบุเครือข่ายไม่ถูกต้อง</thai>
+    <english>Network failure</english>
+  </message>
+  <message id="72" name="NETWORK-HOLD">
+    <thai>เครือข่ายนี้งดให้บริการชั่วคราว</thai>
+    <english>Network out of service</english>
+  </message>
+  <message id="73" name="TOPUP-HOLD">
+    <thai>ตู้เติมเงินงดให้บริการชั่วคราว</thai>
+    <english>Out of service</english>
+  </message>
+  <message id="74" name="CREDIT-ERROR">
+    <thai>เกิดความผิดพลาดในการเก็บเงินเป็นเครดิต</thai>
+    <english>Credit error</english>
+  </message>
+  <message id="75" name="REPORT-ERROR">
+    <thai>เกิดความผิดพลาดในการแจ้งปัญหา</thai>
+    <english>Report error</english>
+  </message>
+  <message id="76" name="PASSWORD-ERROR">
+    <thai>รหัสผ่านผิดพลาด</thai>
+    <english>Password error</english>
+  </message>
+  <message id="77" name="OPEN-ERROR">
+    <thai>เกิดความผิดพลาดในการเปิดตู้เติมเงิน</thai>
+    <english>Open error</english>
+  </message>
+  <message id="78" name="CLEAR-ERROR">
+    <thai>เกิดความผิดพลาดในการ Clear ยอดเงิน</thai>
+    <english>Clearing balance error</english>
+  </message>
+  <message id="79" name="CANCEL">
+    <thai>ยกเลิก</thai>
+    <english>Cancel</english>
+  </message>
+  <message id="80" name="BACK">
+    <thai>ย้อนกลับ</thai>
+    <english>Back</english>
+  </message>
+  <message id="81" name="DELETE">
+    <thai>ลบ</thai>
+    <english>Del</english>
+  </message>
+  <message id="82" name="PAY">
+    <thai>ชำระค่าบริการ</thai>
+    <english>Service payment</english>
+  </message>
+  <message id="83" name="HOME">
+    <thai>หน้าแรก</thai>
+    <english>Screene one</english>
+  </message>
+  <message id="84" name="CONFIRM">
+    <thai>ยืนยัน</thai>
+    <english>Confirm</english>
+  </message>
+  <message id="85" name="REPORT">
+    <thai>แจ้ง</thai>
+    <english>Report</english>
+  </message>
+  <message id="86" name="LOGIN">
+    <thai>เข้าระบบ</thai>
+    <english>Login</english>
+  </message>
+  <message id="87" name="OPEN">
+    <thai>เปิดตู้เติมเงิน</thai>
+    <english>Open the door</english>
+  </message>
+  <message id="88" name="CLOSE">
+    <thai>ปิดตู้เติมเงิน</thai>
+    <english>Close the door</english>
+  </message>
+  <message id="89" name="CONFIRMUPGRADE">
+    <thai>ยืนยันการ Upgrade Firmware</thai>
+    <english>Confirm Firmware upgrade</english>
+  </message>
+  <message id="90" name="VIDEO-PUBLIC-UTILITY">
+    <thai>สาธิตชำระค่าสาธารณูปโภค</thai>
+    <english>Public utility demonstration video</english>
+  </message>
+  <message id="91" name="PLAY-MOBILE">
+    <thai>เติมเงินมือถือ</thai>
+    <english>Mobile Topup payment</english>
+  </message>
+  <message id="92" name="PLAY-GAME">
+    <thai>ซื้อบัตรเงินสดบัตรเกม</thai>
+    <english>Buy game cards</english>
+  </message>
+  <message id="93" name="PLAY-PHONE">
+    <thai>ซื้อบัตรโทรต่างประเทศ</thai>
+    <english>Buy international calling cards</english>
+  </message>
+  <message id="94" name="PLAY-PUBLIC-UTILITY">
+    <thai>ชำระค่าสาธารณูปโภค</thai>
+    <english>Pay utility bills</english>
+  </message>
+  <message id="95" name="PLAY-REPORT">
+    <thai>แจ้งปัญหา</thai>
+    <english>Get Report</english>
+  </message>
+  <message id="96" name="E01">
+    <thai>ข้อมูลที่ส่งเข้ามาผิดพลาด</thai>
+    <english>Data failure</english>
+  </message>
+  <message id="97" name="E02">
+    <thai>ข้อมูล network ที่ส่งเข้ามาผิดพลาด</thai>
+    <english>Network failure</english>
+  </message>
+  <message id="98" name="E03">
+    <thai>เบอร์มือถือผิดพลาด</thai>
+    <english>Incorrect mobile number</english>
+  </message>
+  <message id="99" name="E04">
+    <thai>ยอดเติมเงินผิดพลาด</thai>
+    <english>Incorrect amount</english>
+  </message>
+  <message id="100" name="E05">
+    <thai>network เติมเงินผิดพลาด</thai> 
+    <english>Network incorrect</english>
+  </message>
+  <message id="101" name="E06">
+    <thai>เลือกเครือข่ายผิด</thai>
+    <english>You have chosen incorrect network</english>
+  </message>
+  <message id="102" name="E07">
+    <thai>เงินเครดิตของ ows หมดแล้ว</thai>
+    <english>Credit ows is empty</english>
+  </message>
+  <message id="103" name="E08">
+    <thai>เบอร์มือถือนี้อยู่ระหว่างเติมเงิน</thai>
+    <english>This is a prepaid phone</english>
+  </message>
+  <message id="104" name="E09">
+    <thai>มีคิวการเติมเงินอยู่ใน firsttopup จำนวนมาก</thai>
+    <english>There is a big queue in topup</english>
+  </message>
+  <message id="105" name="E10">
+    <thai>ตู้เติมเงินนี้ถูก lock</thai>
+    <english>Device is lock</english>
+  </message>
+  <message id="106" name="E11">
+    <thai>เจ้าของตู้ถูก lock</thai>
+    <english>Partner is lock</english>
+  </message>
+  <message id="107" name="E12">
+    <thai>ไม่มีตู้เติมเงินนี้ในระบบ</thai>
+    <english>Cashbox is empty</english>
+  </message>
+  <message id="108" name="E13">
+    <thai>เงินเครดิตของ Partner หมดแล้ว</thai>
+    <english>Credit partner is empty</english>
+  </message>
+  <message id="109" name="E14">
+    <thai>Partner ถูก lock</thai>
+    <english>Partner is lock</english>
+  </message>
+  <message id="110" name="E15">
+    <thai>เงินเครดิตของ member หมดแล้ว</thai>
+    <english>Credit member is empty</english>
+  </message>
+  <message id="111" name="E16">
+    <thai>ราคาที่เติมไม่ถูกต้อง</thai>
+    <english>Price is incorrect</english>
+  </message>
+  <message id="112" name="E17">
+    <thai>ผิดพลาดไม่ทราบสาเหตุ</thai>
+    <english>Unknown error</english>
+  </message>
+  <message id="113" name="FOOT-NAME">
+    <thai>Firmware Version 1.0 Build 1.0</thai>
+    <english>Firmware Version 1.0 Build 1.0</english>
+  </message>
+</topup>

@@ -1,0 +1,144 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@id/header_bg"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:scaleType="fitXY"
+            android:src="@drawable/header_bg" />
+
+        <ImageView
+            android:id="@id/header_bg_camera"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/bg_camera"
+            android:visibility="gone" />
+
+        <FrameLayout
+            android:id="@id/preview"
+            android:layout_width="110.0dip"
+            android:layout_height="110.0dip"
+            android:layout_marginLeft="7.0dip"
+            android:layout_marginTop="7.0dip" />
+
+        <TextView
+            android:id="@id/header_id"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginTop="20.0dip"
+            android:text="Large Text"
+            android:textAppearance="?android:textAppearanceLarge"
+            android:textSize="25.0sp" />
+
+        <TextView
+            android:id="@id/header_news"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center"
+            android:layout_marginBottom="23.0dip"
+            android:ellipsize="marquee"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:scrollHorizontally="true"
+            android:singleLine="true"
+            android:text="hellobar"
+            android:textSize="30.0sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@id/header_language_switch"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/thai" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|right"
+            android:layout_marginRight="5.0dip"
+            android:layout_marginTop="-10.0dip">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <DigitalClock
+                    android:id="@id/digitalClock1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:text="DigitalClock"
+                    android:textColor="@color/white"
+                    android:textSize="25.0sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@id/header_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:layout_marginTop="5.0px"
+                    android:text="Sat, Aug 28, 2012"
+                    android:textAppearance="?android:textAppearanceSmall"
+                    android:textColor="@color/white"
+                    android:textSize="15.0sp"
+                    android:textStyle="bold" />
+
+                <FrameLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@id/operator"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5.0dip"
+                        android:text="Medium Text"
+                        android:textAppearance="?android:textAppearanceMedium" />
+
+                    <ImageView
+                        android:id="@id/signal_image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="right"
+                        android:layout_marginRight="5.0dip" />
+                </FrameLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10.0px">
+
+                <ImageView
+                    android:id="@id/light"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <ImageView
+                    android:id="@id/sound"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+        </LinearLayout>
+    </FrameLayout>
+</FrameLayout>

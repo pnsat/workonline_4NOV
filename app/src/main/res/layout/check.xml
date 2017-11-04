@@ -1,0 +1,238 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@id/FrameLayout_background"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/bg_blue"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <include
+            layout="@layout/header_menu"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:id="@id/logoImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginLeft="10.0dip"
+            android:src="@drawable/logo_all_one2call" />
+
+        <TextView
+            android:id="@id/check_text_checkInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="กรุณาตรวจสอบข้อมูล"
+            android:textAppearance="?android:textAppearanceLarge"
+            android:textColor="@color/black"
+            android:textSize="40.0sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10.0dip">
+
+            <EditText
+                android:id="@id/year"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="1.0"
+                android:ems="10"
+                android:inputType="number"
+                android:textSize="26.0sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_gravity="center"
+            android:layout_marginTop="10.0dip">
+
+            <TextView
+                android:id="@id/check_text_price_refill"
+                android:layout_width="200.0dip"
+                android:layout_height="wrap_content"
+                android:text="ราคาที่เติม"
+                android:textAppearance="?android:textAppearanceLarge"
+                android:textColor="@color/black"
+                android:textSize="40.0sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@id/textView1"
+                android:layout_width="100.0dip"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:layout_marginRight="3.0dip"
+                android:gravity="right"
+                android:text="30"
+                android:textAppearance="?android:textAppearanceLarge"
+                android:textColor="@color/black"
+                android:textSize="26.0sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@id/check_text_bath0"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="บาท"
+                android:textAppearance="?android:textAppearanceLarge"
+                android:textColor="@color/black"
+                android:textSize="40.0sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_gravity="center"
+            android:layout_marginTop="10.0dip">
+
+            <TextView
+                android:id="@id/check_text_price_box"
+                android:layout_width="200.0dip"
+                android:layout_height="wrap_content"
+                android:text="ค่าบริการตู้"
+                android:textAppearance="?android:textAppearanceLarge"
+                android:textColor="@color/black"
+                android:textSize="40.0sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@id/textView2"
+                android:layout_width="100.0dip"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="3.0dip"
+                android:gravity="right"
+                android:text="80"
+                android:textAppearance="?android:textAppearanceLarge"
+                android:textColor="@color/black"
+                android:textSize="26.0sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@id/check_text_bath1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="บาท"
+                android:textAppearance="?android:textAppearanceLarge"
+                android:textColor="@color/black"
+                android:textSize="40.0sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_gravity="center"
+            android:layout_marginTop="10.0dip">
+
+            <TextView
+                android:id="@id/check_text_price_credit"
+                android:layout_width="200.0dip"
+                android:layout_height="wrap_content"
+                android:text="เครดิสเดิม"
+                android:textAppearance="?android:textAppearanceLarge"
+                android:textColor="@color/black"
+                android:textSize="40.0sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@id/machineStatus"
+                android:layout_width="100.0dip"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="3.0dip"
+                android:gravity="right"
+                android:text="100"
+                android:textAppearance="?android:textAppearanceLarge"
+                android:textColor="@color/black"
+                android:textSize="26.0sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@id/check_text_bath2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="บาท"
+                android:textAppearance="?android:textAppearanceLarge"
+                android:textColor="@color/black"
+                android:textSize="40.0sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_gravity="center"
+            android:layout_marginTop="10.0dip">
+
+            <TextView
+                android:id="@id/check_text_price_coin"
+                android:layout_width="200.0dip"
+                android:layout_height="wrap_content"
+                android:text="ต้องหยอดเหรียญ"
+                android:textAppearance="?android:textAppearanceLarge"
+                android:textColor="@color/black"
+                android:textSize="40.0sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@id/textView4"
+                android:layout_width="100.0dip"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="3.0dip"
+                android:gravity="right"
+                android:text="100"
+                android:textAppearance="?android:textAppearanceLarge"
+                android:textColor="@color/black"
+                android:textSize="26.0sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@id/check_text_bath3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="บาท"
+                android:textAppearance="?android:textAppearanceLarge"
+                android:textColor="@color/black"
+                android:textSize="40.0sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@id/check_text_check_totalmoney"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="10.0dip"
+            android:layout_marginRight="10.0dip"
+            android:layout_marginTop="30.0dip"
+            android:text="ตรวจสอบยอดเงินและเตรียมเงินให้พร้อมกรุณากดชำระเงิน"
+            android:textAppearance="?android:textAppearanceSmall"
+            android:textColor="@color/black"
+            android:textSize="40.0sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center">
+
+        <include
+            layout="@layout/footer_menu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </FrameLayout>
+</FrameLayout>

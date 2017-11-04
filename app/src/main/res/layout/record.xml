@@ -1,0 +1,62 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/bg_blue"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <include
+            layout="@layout/header_menu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TableLayout
+            android:id="@id/maintable"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="2.0dip"
+            android:layout_marginRight="2.0dip" />
+
+        <FrameLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_marginTop="20.0dip">
+
+            <Button
+                android:id="@id/button_next"
+                android:layout_width="wrap_content"
+                android:layout_height="60.0dip"
+                android:layout_gravity="right"
+                android:background="@drawable/bt_number"
+                android:text="Next"
+                android:textSize="18.0sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@id/button_prev"
+                android:layout_width="wrap_content"
+                android:layout_height="60.0dip"
+                android:background="@drawable/bt_number"
+                android:text="prev"
+                android:textSize="18.0sp"
+                android:textStyle="bold" />
+        </FrameLayout>
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center">
+
+        <include
+            layout="@layout/footer_menu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </FrameLayout>
+</FrameLayout>

@@ -1,0 +1,91 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+
+        <ImageView
+            android:id="@id/background_imageview"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:scaleType="fitXY"
+            android:src="@drawable/bg_blue" />
+
+        <Button
+            android:id="@id/fake_click"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center"
+            android:background="@drawable/bt_the_first_page_th" />
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical">
+
+            <include
+                layout="@layout/header_menu"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" />
+
+            <FrameLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent">
+
+                <TextView
+                    android:id="@id/textView1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="90.0dip"
+                    android:text="กรุณาตรวจสอบข้อมูล"
+                    android:textAppearance="?android:textAppearanceSmall"
+                    android:textColor="@color/black"
+                    android:textSize="28.0sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@id/textView2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="40.0dip"
+                    android:text="กรุณาตรวจสอบข้อมูล"
+                    android:textAppearance="?android:textAppearanceSmall"
+                    android:textColor="@color/black"
+                    android:textSize="28.0sp"
+                    android:textStyle="bold" />
+
+                <Button
+                    android:id="@id/print"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="40.0dip"
+                    android:layout_weight="0.7"
+                    android:background="@drawable/bt_number"
+                    android:hint="5"
+                    android:text="พิมพ์"
+                    android:textSize="30.0sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+            </FrameLayout>
+        </LinearLayout>
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center"
+            android:visibility="gone">
+
+            <include
+                layout="@layout/footer_menu"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </FrameLayout>
+    </FrameLayout>
+</LinearLayout>

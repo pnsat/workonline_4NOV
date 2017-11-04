@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">OWS</string>
+    <string name="VersionApp">Online Topup Firmware Version 1.0 Build 1.0 Status OK</string>
+    <string name="accessibilityServiceDescription">Please enable the accessibility service to enable USSD reader</string>
+    <string name="phonethai">โทรศัพท์</string>
+    <string name="USSD_settingprogram">โปรแกรมติดตั้งแพคเกจ</string>
+    <string name="USSD_money_text_ms_true_1">คุณมี</string>
+    <string name="USSD_money_text_ms_true_2">บ.</string>
+    <string name="USSD_money_text_ms_ais_1">your remaining balance:</string>
+    <string name="USSD_money_text_ms_ais_2">valid until</string>
+    <string name="USSD_money_text_ms_ais_3">b,</string>
+    <string name="USSD_number_text_ms_true">:เป็นเบอร์ทรูมูฟ</string>
+    <string name="USSD_number_text_ms_ais_1">คุณคือลูกค้า</string>
+    <string name="USSD_number_text_ms_ais_2">หมายเลข</string>
+</resources>

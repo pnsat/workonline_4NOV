@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@id/background_imageview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/bg_blue" />
+
+        <Button
+            android:id="@id/fake_click"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center"
+            android:background="@drawable/bt_home_th" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <include
+                layout="@layout/header_menu"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@id/finishreport_text_message_system"
+                android:layout_width="fill_parent"
+                android:layout_height="52.0dip"
+                android:text="ระบบรับแจ้งปัญหาแล้วเจ้าหน้าที่จะดำเนินการตรวจสอบต่อไป"
+                android:textAppearance="?android:textAppearanceLarge"
+                android:textColor="@color/black"
+                android:textSize="22.0sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </FrameLayout>
+</LinearLayout>

@@ -1,0 +1,46 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android" android:orientation="vertical" android:id="@id/FrameLayout_background" android:background="@drawable/bg_orange" android:layout_width="fill_parent" android:layout_height="fill_parent">
+	<include android:layout_width="fill_parent" android:layout_height="wrap_content" layout="@layout/header_menu" />
+	<FrameLayout android:background="@color/white" android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_marginTop="80.0dip">
+		<LinearLayout android:layout_width="fill_parent" android:layout_height="fill_parent" android:weightSum="2.0">
+			<LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_weight="1.0">
+				<TextView android:textAppearance="?android:textAppearanceLarge" android:textSize="40.0sp" android:textStyle="bold" android:textColor="@color/black" android:layout_gravity="center" android:id="@id/report_text_fill_number" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="xoxoxoxo" />
+				<EditText android:textSize="45.0sp" android:textStyle="bold" android:textColor="@color/black" android:layout_gravity="center_horizontal" android:id="@id/year" android:background="@drawable/textfield_bg" android:focusable="false" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginLeft="20.0dip" android:layout_marginTop="20.0dip" android:layout_marginRight="20.0dip" android:inputType="number" />
+				<TextView android:textAppearance="?android:textAppearanceSmall" android:textSize="60.0sp" android:textStyle="bold" android:textColor="@color/black" android:id="@id/report_text_topic_problem" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="45.0dip" android:layout_marginTop="10.0dip" android:text="xoxoxoxo" />
+				<RadioGroup android:layout_gravity="left" android:id="@id/radioGroup1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="45.0dip">
+					<RadioButton android:textSize="45.0sp" android:textStyle="bold" android:textColor="@color/black" android:id="@id/report_radio_text_0" android:layout_width="wrap_content" android:layout_height="45.0dip" android:text="xoxoxoxo" />
+					<RadioButton android:textSize="45.0sp" android:textStyle="bold" android:textColor="@color/black" android:id="@id/report_radio_text_1" android:layout_width="wrap_content" android:layout_height="45.0dip" android:text="xoxoxoxo" />
+					<RadioButton android:textSize="45.0sp" android:textStyle="bold" android:textColor="@color/black" android:id="@id/report_radio_text_2" android:layout_width="wrap_content" android:layout_height="45.0dip" android:text="xoxoxoxo" />
+					<RadioButton android:textSize="45.0sp" android:textStyle="bold" android:textColor="@color/black" android:id="@id/report_radio_text_3" android:layout_width="wrap_content" android:layout_height="45.0dip" android:text="xoxoxoxo" />
+				</RadioGroup>
+			</LinearLayout>
+			<FrameLayout android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_weight="1.0">
+				<TableLayout android:id="@id/tableRoot" android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_marginTop="10.0dip" android:layout_weight="1.0">
+					<TableRow android:id="@id/tableRow1" android:layout_width="wrap_content" android:layout_height="15.0dip">
+						<Button android:textSize="50.0sp" android:textStyle="bold" android:id="@id/fake_click" android:background="@drawable/button_frame" android:layout_width="115.0dip" android:layout_height="88.0dip" android:text="1" android:hint="1" />
+						<Button android:textSize="50.0sp" android:textStyle="bold" android:id="@id/button2" android:background="@drawable/button_frame" android:layout_width="115.0dip" android:layout_height="88.0dip" android:layout_marginLeft="10.0dip" android:text="2" android:hint="2" />
+						<Button android:textSize="50.0sp" android:textStyle="bold" android:id="@id/button3" android:background="@drawable/button_frame" android:layout_width="115.0dip" android:layout_height="88.0dip" android:layout_marginLeft="10.0dip" android:text="3" android:hint="3" />
+					</TableRow>
+					<TableRow android:id="@id/tableRow2" android:layout_width="wrap_content" android:layout_height="15.0dip" android:layout_marginTop="5.0dip">
+						<Button android:textSize="50.0sp" android:textStyle="bold" android:id="@id/button4" android:background="@drawable/button_frame" android:layout_width="115.0dip" android:layout_height="88.0dip" android:text="4" android:hint="4" />
+						<Button android:textSize="50.0sp" android:textStyle="bold" android:id="@id/button5" android:background="@drawable/button_frame" android:layout_width="115.0dip" android:layout_height="88.0dip" android:layout_marginLeft="10.0dip" android:text="5" android:hint="5" />
+						<Button android:textSize="50.0sp" android:textStyle="bold" android:id="@id/button6" android:background="@drawable/button_frame" android:layout_width="115.0dip" android:layout_height="88.0dip" android:layout_marginLeft="10.0dip" android:text="6" android:hint="6" />
+					</TableRow>
+					<TableRow android:id="@id/tableRow3" android:layout_width="wrap_content" android:layout_height="15.0dip" android:layout_marginTop="5.0dip">
+						<Button android:textSize="50.0sp" android:textStyle="bold" android:id="@id/button7" android:background="@drawable/button_frame" android:layout_width="115.0dip" android:layout_height="88.0dip" android:text="7" android:hint="7" />
+						<Button android:textSize="50.0sp" android:textStyle="bold" android:id="@id/button8" android:background="@drawable/button_frame" android:layout_width="115.0dip" android:layout_height="88.0dip" android:layout_marginLeft="10.0dip" android:text="8" android:hint="8" />
+						<Button android:textSize="50.0sp" android:textStyle="bold" android:id="@id/button9" android:background="@drawable/button_frame" android:layout_width="115.0dip" android:layout_height="88.0dip" android:layout_marginLeft="10.0dip" android:text="9" android:hint="9" />
+					</TableRow>
+					<TableRow android:id="@id/tableRow4" android:layout_width="wrap_content" android:layout_height="15.0dip" android:layout_marginTop="5.0dip">
+						<Button android:textSize="50.0sp" android:textStyle="bold" android:id="@id/button10" android:background="@drawable/button_frame" android:layout_width="115.0dip" android:layout_height="88.0dip" android:text="*" android:hint="star" />
+						<Button android:textSize="50.0sp" android:textStyle="bold" android:id="@id/button11" android:background="@drawable/button_frame" android:layout_width="115.0dip" android:layout_height="88.0dip" android:layout_marginLeft="10.0dip" android:text="0" android:hint="0" />
+						<Button android:textSize="50.0sp" android:textStyle="bold" android:id="@id/button12" android:background="@drawable/button_frame" android:layout_width="115.0dip" android:layout_height="88.0dip" android:layout_marginLeft="10.0dip" android:text="ลบ" android:hint="delete" />
+					</TableRow>
+				</TableLayout>
+			</FrameLayout>
+		</LinearLayout>
+		<FrameLayout android:layout_gravity="bottom|center" android:layout_width="fill_parent" android:layout_height="wrap_content">
+			<include android:layout_width="fill_parent" android:layout_height="wrap_content" layout="@layout/footer_menu" />
+		</FrameLayout>
+	</FrameLayout>
+</FrameLayout>

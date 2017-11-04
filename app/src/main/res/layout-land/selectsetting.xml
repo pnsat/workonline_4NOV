@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android" android:orientation="vertical" android:background="@drawable/bg_blue" android:layout_width="fill_parent" android:layout_height="fill_parent">
+	<include android:layout_width="fill_parent" android:layout_height="wrap_content" layout="@layout/header_menu" />
+	<FrameLayout android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_marginTop="80.0dip">
+		<FrameLayout android:background="@color/white" android:layout_width="fill_parent" android:layout_height="fill_parent" />
+		<FrameLayout android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content">
+			<include android:layout_width="wrap_content" android:layout_height="wrap_content" layout="@layout/footer_menu" />
+		</FrameLayout>
+		<Button android:layout_gravity="bottom|center" android:id="@id/Button09" android:background="@drawable/bt_the_first_page_th" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+		<LinearLayout android:layout_gravity="center_horizontal" android:orientation="vertical" android:layout_width="wrap_content" android:layout_height="wrap_content">
+			<LinearLayout android:layout_gravity="center" android:orientation="vertical" android:layout_width="wrap_content" android:layout_height="wrap_content">
+				<FrameLayout android:layout_width="fill_parent" android:layout_height="wrap_content">
+					<CheckBox android:textColor="@color/black" android:layout_gravity="right" android:id="@id/checkBoxNumSound" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="เสียงเบอร์โทร" />
+					<TextView android:textAppearance="?android:textAppearanceSmall" android:textSize="25.0sp" android:textStyle="bold" android:textColor="@color/black" android:id="@id/selectsetting_text_topic" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="10.0dip" android:text="เลือกเมนูจัดการ" />
+				</FrameLayout>
+				<LinearLayout android:layout_width="wrap_content" android:layout_height="95.0dip" android:layout_marginTop="10.0dip">
+					<Button android:textSize="18.0sp" android:textStyle="bold" android:id="@id/Button01" android:background="@drawable/setting_border" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="5.0dip" android:layout_marginRight="5.0dip" android:text="ดูรายละเอียดตู้" />
+					<Button android:textSize="18.0sp" android:textStyle="bold" android:id="@id/Button02" android:background="@drawable/setting_border" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="40.0dip" android:layout_marginRight="40.0dip" android:text="เปิดตู้เติมเงิน" />
+					<Button android:textSize="18.0sp" android:textStyle="bold" android:id="@id/Button03" android:background="@drawable/setting_border" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="5.0dip" android:layout_marginRight="5.0dip" android:text="รายงานเติมเงิน" />
+				</LinearLayout>
+				<LinearLayout android:layout_width="wrap_content" android:layout_height="95.0dip" android:layout_marginTop="5.0dip" android:layout_marginBottom="5.0dip">
+					<Button android:textSize="18.0sp" android:textStyle="bold" android:id="@id/Button04" android:background="@drawable/setting_border" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="5.0dip" android:layout_marginRight="5.0dip" android:text="Clear ยอดเงิน" />
+					<Button android:textSize="18.0sp" android:textStyle="bold" android:id="@id/Button05" android:background="@drawable/setting_border" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="40.0dip" android:layout_marginRight="40.0dip" android:text="ตั้งค่าตู้เติมเงิน" />
+					<Button android:textSize="18.0sp" android:textStyle="bold" android:id="@id/Button08" android:background="@drawable/setting_border" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="5.0dip" android:layout_marginRight="5.0dip" android:text="ReBoot" />
+				</LinearLayout>
+				<LinearLayout android:layout_width="wrap_content" android:layout_height="95.0dip">
+					<Button android:textSize="18.0sp" android:textStyle="bold" android:id="@id/Button07" android:background="@drawable/setting_border" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="5.0dip" android:layout_marginRight="5.0dip" android:text="ออกจากระบบ" />
+					<Button android:textSize="18.0sp" android:textStyle="bold" android:id="@id/Button11" android:background="@drawable/setting_border" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="40.0dip" android:layout_marginRight="40.0dip" android:text="ลบ Log" />
+				</LinearLayout>
+				<LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="10.0dip" android:weightSum="2.0">
+					<SeekBar android:id="@id/seekBar1" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginRight="10.0dip" android:layout_weight="1.0" />
+					<SeekBar android:id="@id/seekBar2" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginLeft="10.0dip" android:layout_weight="1.0" />
+				</LinearLayout>
+			</LinearLayout>
+		</LinearLayout>
+	</FrameLayout>
+</FrameLayout>
