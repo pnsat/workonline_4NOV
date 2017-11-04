@@ -1,192 +1,135 @@
 /*
- * Decompiled with CFR 0_110.
+ * Copyright 2011 Ytai Ben-Tsvi. All rights reserved.
+ *  
  * 
- * Could not load the following classes:
- *  java.io.IOException
- *  java.lang.AssertionError
- *  java.lang.Exception
- *  java.lang.Integer
- *  java.lang.InterruptedException
- *  java.lang.Object
- *  java.util.LinkedList
- *  java.util.Queue
+ * Redistribution and use in source and binary forms, with or without modification, are
+ * permitted provided that the following conditions are met:
+ * 
+ *    1. Redistributions of source code must retain the above copyright notice, this list of
+ *       conditions and the following disclaimer.
+ * 
+ *    2. Redistributions in binary form must reproduce the above copyright notice, this list
+ *       of conditions and the following disclaimer in the documentation and/or other materials
+ *       provided with the distribution.
+ * 
+ * THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+ * FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL ARSHAN POURSOHI OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+ * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * 
+ * The views and conclusions contained in the software and documentation are those of the
+ * authors and should not be interpreted as representing official policies, either expressed
+ * or implied.
  */
 package ioio.lib.impl;
 
 import ioio.lib.api.IcspMaster;
 import ioio.lib.api.exception.ConnectionLostException;
-import ioio.lib.impl.AbstractResource;
-import ioio.lib.impl.IOIOImpl;
-import ioio.lib.impl.IOIOProtocol;
-import ioio.lib.impl.IncomingState;
+import ioio.lib.impl.IncomingState.DataModuleListener;
+
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Queue;
 
-class IcspMasterImpl
-extends AbstractResource
-implements IcspMaster,
-IncomingState.DataModuleListener {
-    static final /* synthetic */ boolean $assertionsDisabled;
-    private Queue<Integer> resultQueue_ = new LinkedList();
-    private int rxRemaining_ = 0;
+class IcspMasterImpl extends AbstractResource implements IcspMaster,
+		DataModuleListener {
+	private Queue<Integer> resultQueue_ = new LinkedList<Integer>();
+	private int rxRemaining_ = 0;
 
-    /*
-     * Enabled aggressive block sorting
-     */
-    static {
-        boolean bl = !IcspMasterImpl.class.desiredAssertionStatus();
-        $assertionsDisabled = bl;
-    }
+	public IcspMasterImpl(IOIOImpl ioio) throws ConnectionLostException {
+		super(ioio);
+	}
 
-    public IcspMasterImpl(IOIOImpl iOIOImpl) throws ConnectionLostException {
-        super(iOIOImpl);
-    }
+	@Override
+	synchronized public void dataReceived(byte[] data, int size) {
+		assert (size == 2);
+		int result = (byteToInt(data[1]) << 8) | byteToInt(data[0]);
+		resultQueue_.add(result);
+		notifyAll();
+	}
 
-    private static int byteToInt(byte by) {
-        return by & 255;
-    }
+	@Override
+	synchronized public void reportAdditionalBuffer(int bytesToAdd) {
+		rxRemaining_ += bytesToAdd;
+		notifyAll();
+	}
 
-    @Override
-    public void close() {
-        IcspMasterImpl icspMasterImpl = this;
-        synchronized (icspMasterImpl) {
-            super.close();
-            this.ioio_.closeIcsp();
-            return;
-        }
-    }
+	@Override
+	synchronized public void enterProgramming() throws ConnectionLostException {
+		checkState();
+		try {
+			ioio_.protocol_.icspEnter();
+		} catch (IOException e) {
+			throw new ConnectionLostException(e);
+		}
+	}
 
-    /*
-     * Enabled aggressive block sorting
-     * Enabled unnecessary exception pruning
-     * Enabled aggressive exception aggregation
-     */
-    @Override
-    public void dataReceived(byte[] arrby, int n) {
-        void var6_3 = this;
-        synchronized (var6_3) {
-            if (!$assertionsDisabled && n != 2) {
-                throw new AssertionError();
-            }
-            int n2 = IcspMasterImpl.byteToInt(arrby[1]) << 8 | IcspMasterImpl.byteToInt(arrby[0]);
-            this.resultQueue_.add((Object)n2);
-            this.notifyAll();
-            return;
-        }
-    }
+	@Override
+	synchronized public void exitProgramming() throws ConnectionLostException {
+		checkState();
+		try {
+			ioio_.protocol_.icspExit();
+		} catch (IOException e) {
+			throw new ConnectionLostException(e);
+		}
+	}
 
-    @Override
-    public void disconnected() {
-        IcspMasterImpl icspMasterImpl = this;
-        synchronized (icspMasterImpl) {
-            super.disconnected();
-            this.notifyAll();
-            return;
-        }
-    }
+	@Override
+	synchronized public void executeInstruction(int instruction)
+			throws ConnectionLostException {
+		checkState();
+		try {
+			ioio_.protocol_.icspSix(instruction);
+		} catch (IOException e) {
+			throw new ConnectionLostException(e);
+		}
+	}
 
-    @Override
-    public void enterProgramming() throws ConnectionLostException {
-        IcspMasterImpl icspMasterImpl = this;
-        synchronized (icspMasterImpl) {
-            this.checkState();
-            try {
-                this.ioio_.protocol_.icspEnter();
-                return;
-            }
-            catch (IOException var2_2) {
-                throw new ConnectionLostException((Exception)var2_2);
-            }
-        }
-    }
+	@Override
+	synchronized public void readVisi() throws ConnectionLostException,
+			InterruptedException {
+		checkState();
+		while (rxRemaining_ < 2 && state_ == State.OPEN) {
+			wait();
+		}
+		checkState();
+		rxRemaining_ -= 2;
+		try {
+			ioio_.protocol_.icspRegout();
+		} catch (IOException e) {
+			throw new ConnectionLostException(e);
+		}
+	}
 
-    @Override
-    public void executeInstruction(int n) throws ConnectionLostException {
-        void var4_2 = this;
-        synchronized (var4_2) {
-            this.checkState();
-            try {
-                this.ioio_.protocol_.icspSix(n);
-                return;
-            }
-            catch (IOException var3_3) {
-                throw new ConnectionLostException((Exception)var3_3);
-            }
-        }
-    }
+	@Override
+	synchronized public void close() {
+		super.close();
+		ioio_.closeIcsp();
+	}
 
-    @Override
-    public void exitProgramming() throws ConnectionLostException {
-        IcspMasterImpl icspMasterImpl = this;
-        synchronized (icspMasterImpl) {
-            this.checkState();
-            try {
-                this.ioio_.protocol_.icspExit();
-                return;
-            }
-            catch (IOException var2_2) {
-                throw new ConnectionLostException((Exception)var2_2);
-            }
-        }
-    }
+	@Override
+	public synchronized void disconnected() {
+		super.disconnected();
+		notifyAll();
+	}
+	
+	private static int byteToInt(byte b) {
+		return ((int) b) & 0xFF;
+	}
 
-    /*
-     * Loose catch block
-     * Enabled aggressive block sorting
-     * Enabled unnecessary exception pruning
-     * Enabled aggressive exception aggregation
-     * Converted monitor instructions to comments
-     * Lifted jumps to return sites
-     */
-    @Override
-    public void readVisi() throws ConnectionLostException, InterruptedException {
-        IcspMasterImpl icspMasterImpl = this;
-        // MONITORENTER : icspMasterImpl
-        this.checkState();
-        do {
-            if (this.rxRemaining_ >= 2 || this.state_ != AbstractResource.State.OPEN) {
-                this.checkState();
-                this.rxRemaining_ = -2 + this.rxRemaining_;
-                this.ioio_.protocol_.icspRegout();
-                // MONITOREXIT : icspMasterImpl
-                return;
-            }
-            this.wait();
-        } while (true);
-        catch (IOException iOException) {
-            throw new ConnectionLostException((Exception)iOException);
-        }
-    }
-
-    @Override
-    public void reportAdditionalBuffer(int n) {
-        void var3_2 = this;
-        synchronized (var3_2) {
-            this.rxRemaining_ = n + this.rxRemaining_;
-            this.notifyAll();
-            return;
-        }
-    }
-
-    /*
-     * Enabled aggressive block sorting
-     * Enabled unnecessary exception pruning
-     * Enabled aggressive exception aggregation
-     */
-    @Override
-    public int waitVisiResult() throws ConnectionLostException, InterruptedException {
-        IcspMasterImpl icspMasterImpl = this;
-        synchronized (icspMasterImpl) {
-            this.checkState();
-            do {
-                if (!this.resultQueue_.isEmpty() || this.state_ != AbstractResource.State.OPEN) {
-                    this.checkState();
-                    return (Integer)this.resultQueue_.remove();
-                }
-                this.wait();
-            } while (true);
-        }
-    }
+	@Override
+	public synchronized int waitVisiResult() throws ConnectionLostException,
+			InterruptedException {
+		checkState();
+		while (resultQueue_.isEmpty() && state_ == State.OPEN) {
+			wait();
+		}
+		checkState();
+		return resultQueue_.remove();
+	}
 }
-

@@ -1,238 +1,198 @@
 /*
- * Decompiled with CFR 0_110.
+ * Copyright 2011 Ytai Ben-Tsvi. All rights reserved.
+ *  
  * 
- * Could not load the following classes:
- *  android.util.Log
- *  java.io.IOException
- *  java.lang.Integer
- *  java.lang.InterruptedException
- *  java.lang.Object
- *  java.lang.String
- *  java.lang.System
- *  java.lang.Throwable
- *  java.util.HashMap
- *  java.util.Iterator
- *  java.util.Map
- *  java.util.Queue
- *  java.util.concurrent.ConcurrentLinkedQueue
+ * Redistribution and use in source and binary forms, with or without modification, are
+ * permitted provided that the following conditions are met:
+ * 
+ *    1. Redistributions of source code must retain the above copyright notice, this list of
+ *       conditions and the following disclaimer.
+ * 
+ *    2. Redistributions in binary form must reproduce the above copyright notice, this list
+ *       of conditions and the following disclaimer in the documentation and/or other materials
+ *       provided with the distribution.
+ * 
+ * THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+ * FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL ARSHAN POURSOHI OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+ * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * 
+ * The views and conclusions contained in the software and documentation are those of the
+ * authors and should not be interpreted as representing official policies, either expressed
+ * or implied.
  */
 package ioio.lib.impl;
 
-import android.util.Log;
 import ioio.lib.api.SpiMaster;
 import ioio.lib.api.exception.ConnectionLostException;
-import ioio.lib.impl.AbstractResource;
-import ioio.lib.impl.FlowControlledPacketSender;
-import ioio.lib.impl.IOIOImpl;
-import ioio.lib.impl.IOIOProtocol;
-import ioio.lib.impl.IncomingState;
+import ioio.lib.impl.FlowControlledPacketSender.Packet;
+import ioio.lib.impl.FlowControlledPacketSender.Sender;
+import ioio.lib.impl.IncomingState.DataModuleListener;
+
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-class SpiMasterImpl
-extends AbstractResource
-implements SpiMaster,
-FlowControlledPacketSender.Sender,
-IncomingState.DataModuleListener {
-    private final int clkPinNum_;
-    private final int[] indexToSsPin_;
-    private final int misoPinNum_;
-    private final int mosiPinNum_;
-    private final FlowControlledPacketSender outgoing_;
-    private final Queue<SpiResult> pendingRequests_ = new ConcurrentLinkedQueue();
-    private final int spiNum_;
-    private final Map<Integer, Integer> ssPinToIndex_;
+import android.util.Log;
 
-    SpiMasterImpl(IOIOImpl iOIOImpl, int n, int n2, int n3, int n4, int[] arrn) throws ConnectionLostException {
-        super(iOIOImpl);
-        this.outgoing_ = new FlowControlledPacketSender(this);
-        this.spiNum_ = n;
-        this.mosiPinNum_ = n2;
-        this.misoPinNum_ = n3;
-        this.clkPinNum_ = n4;
-        this.indexToSsPin_ = (int[])arrn.clone();
-        this.ssPinToIndex_ = new HashMap(arrn.length);
-        int n5 = 0;
-        while (n5 < arrn.length) {
-            this.ssPinToIndex_.put((Object)arrn[n5], (Object)n5);
-            ++n5;
-        }
-        return;
-    }
+class SpiMasterImpl extends AbstractResource implements SpiMaster,
+		DataModuleListener, Sender {
+	public class SpiResult implements Result {
+		boolean ready_;
+		final byte[] data_;
+		
+		SpiResult(byte[] data) {
+			data_ = data;
+		}
 
-    /*
-     * Enabled aggressive block sorting
-     * Enabled unnecessary exception pruning
-     * Enabled aggressive exception aggregation
-     */
-    @Override
-    public void close() {
-        SpiMasterImpl spiMasterImpl = this;
-        synchronized (spiMasterImpl) {
-            super.close();
-            this.outgoing_.close();
-            this.ioio_.closeSpi(this.spiNum_);
-            this.ioio_.closePin(this.mosiPinNum_);
-            this.ioio_.closePin(this.misoPinNum_);
-            this.ioio_.closePin(this.clkPinNum_);
-            int[] arrn = this.indexToSsPin_;
-            int n = arrn.length;
-            int n2 = 0;
-            while (n2 < n) {
-                int n3 = arrn[n2];
-                this.ioio_.closePin(n3);
-                ++n2;
-            }
-            return;
-        }
-    }
+		@Override
+		public synchronized void waitReady() throws ConnectionLostException,
+				InterruptedException {
+			while (!ready_ && state_ != State.DISCONNECTED) {
+				wait();
+			}
+			checkState();
+		}
+	}
 
-    /*
-     * Enabled aggressive block sorting
-     * Enabled unnecessary exception pruning
-     * Enabled aggressive exception aggregation
-     */
-    @Override
-    public void dataReceived(byte[] arrby, int n) {
-        SpiResult spiResult;
-        SpiResult spiResult2 = spiResult = (SpiResult)this.pendingRequests_.remove();
-        synchronized (spiResult2) {
-            spiResult.ready_ = true;
-            System.arraycopy((Object)arrby, (int)0, (Object)spiResult.data_, (int)0, (int)n);
-            spiResult.notify();
-            return;
-        }
-    }
+	class OutgoingPacket implements Packet {
+		int writeSize_;
+		byte[] writeData_;
+		int ssPin_;
+		int readSize_;
+		int totalSize_;
 
-    /*
-     * Enabled aggressive block sorting
-     * Enabled unnecessary exception pruning
-     * Enabled aggressive exception aggregation
-     */
-    @Override
-    public void disconnected() {
-        SpiMasterImpl spiMasterImpl = this;
-        synchronized (spiMasterImpl) {
-            super.disconnected();
-            this.outgoing_.kill();
-            Iterator iterator = this.pendingRequests_.iterator();
-            boolean bl;
-            while (bl = iterator.hasNext()) {
-                SpiResult spiResult;
-                SpiResult spiResult2 = spiResult = (SpiResult)iterator.next();
-                synchronized (spiResult2) {
-                    spiResult.notify();
-                }
-            }
-            return;
-        }
-    }
+		@Override
+		public int getSize() {
+			return writeSize_ + 4;
+		}
+	}
 
-    @Override
-    public void reportAdditionalBuffer(int n) {
-        this.outgoing_.readyToSend(n);
-    }
+	private final Queue<SpiResult> pendingRequests_ = new ConcurrentLinkedQueue<SpiResult>();
+	private final FlowControlledPacketSender outgoing_ = new FlowControlledPacketSender(
+			this);
 
-    @Override
-    public void send(FlowControlledPacketSender.Packet packet) {
-        OutgoingPacket outgoingPacket = (OutgoingPacket)packet;
-        try {
-            this.ioio_.protocol_.spiMasterRequest(this.spiNum_, outgoingPacket.ssPin_, outgoingPacket.writeData_, outgoingPacket.writeSize_, outgoingPacket.totalSize_, outgoingPacket.readSize_);
-            return;
-        }
-        catch (IOException var3_3) {
-            Log.e((String)"SpiImpl", (String)"Caught exception", (Throwable)var3_3);
-            return;
-        }
-    }
+	private final int spiNum_;
+	private final Map<Integer, Integer> ssPinToIndex_;
+	private final int[] indexToSsPin_;
+	private final int mosiPinNum_;
+	private final int misoPinNum_;
+	private final int clkPinNum_;
 
-    @Override
-    public void writeRead(int n, byte[] arrby, int n2, int n3, byte[] arrby2, int n4) throws ConnectionLostException, InterruptedException {
-        this.writeReadAsync(n, arrby, n2, n3, arrby2, n4).waitReady();
-    }
+	SpiMasterImpl(IOIOImpl ioio, int spiNum, int mosiPinNum, int misoPinNum,
+			int clkPinNum, int[] ssPins) throws ConnectionLostException {
+		super(ioio);
+		spiNum_ = spiNum;
+		mosiPinNum_ = mosiPinNum;
+		misoPinNum_ = misoPinNum;
+		clkPinNum_ = clkPinNum;
+		indexToSsPin_ = ssPins.clone();
+		ssPinToIndex_ = new HashMap<Integer, Integer>(ssPins.length);
+		for (int i = 0; i < ssPins.length; ++i) {
+			ssPinToIndex_.put(ssPins[i], i);
+		}
+	}
 
-    @Override
-    public void writeRead(byte[] arrby, int n, int n2, byte[] arrby2, int n3) throws ConnectionLostException, InterruptedException {
-        this.writeRead(0, arrby, n, n2, arrby2, n3);
-    }
+	@Override
+	synchronized public void disconnected() {
+		super.disconnected();
+		outgoing_.kill();
+		for (SpiResult tr : pendingRequests_) {
+			synchronized (tr) {
+				tr.notify();
+			}
+		}
+	}
 
-    /*
-     * Enabled aggressive block sorting
-     * Enabled unnecessary exception pruning
-     * Enabled aggressive exception aggregation
-     */
-    @Override
-    public SpiResult writeReadAsync(int n, byte[] arrby, int n2, int n3, byte[] arrby2, int n4) throws ConnectionLostException {
-        this.checkState();
-        SpiResult spiResult = new SpiResult(arrby2);
-        OutgoingPacket outgoingPacket = new OutgoingPacket();
-        outgoingPacket.writeSize_ = n2;
-        outgoingPacket.writeData_ = arrby;
-        outgoingPacket.readSize_ = n4;
-        outgoingPacket.ssPin_ = this.indexToSsPin_[n];
-        outgoingPacket.totalSize_ = n3;
-        if (outgoingPacket.readSize_ > 0) {
-            SpiMasterImpl spiMasterImpl = this;
-            synchronized (spiMasterImpl) {
-                this.pendingRequests_.add((Object)spiResult);
-            }
-        } else {
-            spiResult.ready_ = true;
-        }
-        try {
-            this.outgoing_.write(outgoingPacket);
-            return spiResult;
-        }
-        catch (IOException var9_10) {
-            Log.e((String)"SpiMasterImpl", (String)"Exception caught", (Throwable)var9_10);
-            return spiResult;
-        }
-    }
+	@Override
+	public void writeRead(int slave, byte[] writeData, int writeSize,
+			int totalSize, byte[] readData, int readSize)
+			throws ConnectionLostException, InterruptedException {
+		Result result = writeReadAsync(slave, writeData, writeSize,
+				totalSize, readData, readSize);
+		result.waitReady();
+	}
 
-    class OutgoingPacket
-    implements FlowControlledPacketSender.Packet {
-        int readSize_;
-        int ssPin_;
-        int totalSize_;
-        byte[] writeData_;
-        int writeSize_;
+	@Override
+	public SpiResult writeReadAsync(int slave, byte[] writeData,
+			int writeSize, int totalSize, byte[] readData, int readSize)
+			throws ConnectionLostException {
+		checkState();
+		SpiResult result = new SpiResult(readData);
 
-        OutgoingPacket() {
-        }
+		OutgoingPacket p = new OutgoingPacket();
+		p.writeSize_ = writeSize;
+		p.writeData_ = writeData;
+		p.readSize_ = readSize;
+		p.ssPin_ = indexToSsPin_[slave];
+		p.totalSize_ = totalSize;
 
-        @Override
-        public int getSize() {
-            return 4 + this.writeSize_;
-        }
-    }
+		if (p.readSize_ > 0) {
+			synchronized (this) {
+				pendingRequests_.add(result);
+			}
+		} else {
+			result.ready_ = true;
+		}
+		try {
+			outgoing_.write(p);
+		} catch (IOException e) {
+			Log.e("SpiMasterImpl", "Exception caught", e);
+		}
+		return result;
+	}
 
-    public class SpiResult
-    implements Result {
-        final byte[] data_;
-        boolean ready_;
+	@Override
+	public void writeRead(byte[] writeData, int writeSize, int totalSize,
+			byte[] readData, int readSize) throws ConnectionLostException,
+			InterruptedException {
+		writeRead(0, writeData, writeSize, totalSize, readData, readSize);
+	}
 
-        SpiResult(byte[] arrby) {
-            this.data_ = arrby;
-        }
+	@Override
+	public void dataReceived(byte[] data, int size) {
+		SpiResult result = pendingRequests_.remove();
+		synchronized (result) {
+			result.ready_ = true;
+			System.arraycopy(data, 0, result.data_, 0, size);
+			result.notify();
+		}
+	}
 
-        @Override
-        public void waitReady() throws ConnectionLostException, InterruptedException {
-            SpiResult spiResult = this;
-            synchronized (spiResult) {
-                do {
-                    if (this.ready_ || SpiMasterImpl.this.state_ == AbstractResource.State.DISCONNECTED) {
-                        SpiMasterImpl.this.checkState();
-                        return;
-                    }
-                    this.wait();
-                } while (true);
-            }
-        }
-    }
+	@Override
+	public void reportAdditionalBuffer(int bytesRemaining) {
+		outgoing_.readyToSend(bytesRemaining);
+	}
+
+	@Override
+	synchronized public void close() {
+		super.close();
+		outgoing_.close();
+		ioio_.closeSpi(spiNum_);
+		ioio_.closePin(mosiPinNum_);
+		ioio_.closePin(misoPinNum_);
+		ioio_.closePin(clkPinNum_);
+		for (int pin : indexToSsPin_) {
+			ioio_.closePin(pin);
+		}
+	}
+
+	@Override
+	public void send(Packet packet) {
+		OutgoingPacket p = (OutgoingPacket) packet;
+		try {
+			ioio_.protocol_.spiMasterRequest(spiNum_, p.ssPin_, p.writeData_,
+					p.writeSize_, p.totalSize_, p.readSize_);
+		} catch (IOException e) {
+			Log.e("SpiImpl", "Caught exception", e);
+		}
+	}
 
 }
-

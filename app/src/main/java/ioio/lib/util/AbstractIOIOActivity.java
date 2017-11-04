@@ -1,239 +1,369 @@
 /*
- * Decompiled with CFR 0_110.
+ * Copyright 2011 Ytai Ben-Tsvi. All rights reserved.
+ *  
  * 
- * Could not load the following classes:
- *  android.app.Activity
- *  android.content.ContextWrapper
- *  android.content.Intent
- *  android.os.Bundle
- *  java.lang.InterruptedException
- *  java.lang.Object
- *  java.lang.RuntimeException
- *  java.lang.String
- *  java.lang.Thread
- *  java.util.Collection
- *  java.util.Iterator
- *  java.util.LinkedList
+ * Redistribution and use in source and binary forms, with or without modification, are
+ * permitted provided that the following conditions are met:
+ * 
+ *    1. Redistributions of source code must retain the above copyright notice, this list of
+ *       conditions and the following disclaimer.
+ * 
+ *    2. Redistributions in binary form must reproduce the above copyright notice, this list
+ *       of conditions and the following disclaimer in the documentation and/or other materials
+ *       provided with the distribution.
+ * 
+ * THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+ * FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL ARSHAN POURSOHI OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+ * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * 
+ * The views and conclusions contained in the software and documentation are those of the
+ * authors and should not be interpreted as representing official policies, either expressed
+ * or implied.
  */
+
 package ioio.lib.util;
 
-import android.app.Activity;
-import android.content.ContextWrapper;
-import android.content.Intent;
-import android.os.Bundle;
 import ioio.lib.api.IOIO;
+import ioio.lib.api.IOIOFactory;
 import ioio.lib.api.exception.ConnectionLostException;
+import ioio.lib.api.exception.IncompatibilityException;
 import ioio.lib.spi.IOIOConnectionBootstrap;
 import ioio.lib.spi.IOIOConnectionFactory;
-import ioio.lib.util.IOIOConnectionRegistry;
 import ioio.lib.util.android.ContextWrapperDependent;
+
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
 
-public abstract class AbstractIOIOActivity
-extends Activity {
-    private static final String TAG = "AbstractIOIOActivity";
-    private Collection<IOIOConnectionBootstrap> bootstraps_ = IOIOConnectionRegistry.getBootstraps();
-    private IOIOConnectionFactory currentConnectionFactory_;
-    private Collection<IOIOThread> threads_ = new LinkedList();
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
 
-    static {
-        IOIOConnectionRegistry.addBootstraps(new String[]{"ioio.lib.android.accessory.AccessoryConnectionBootstrap", "ioio.lib.android.bluetooth.BluetoothIOIOConnectionBootstrap"});
-    }
+/**
+ * A convenience class for easy creation of IOIO-based applications.
+ * 
+ * It is used by creating a concrete Activity in your application, which extends
+ * this class. This class then takes care of proper creation and abortion of the
+ * IOIO connection and of a dedicated thread for IOIO communication.
+ * 
+ * In the basic usage the client should extend this class and implement
+ * {@link #createIOIOThread()}, which should return an implementation of the
+ * {@link ioio.lib.util.AbstractIOIOActivity.IOIOThread} abstract class. In this
+ * implementation, the client implements the
+ * {@link ioio.lib.util.AbstractIOIOActivity.IOIOThread#setup()} method, which gets called as
+ * soon as communication with the IOIO is established, and the
+ * {@link ioio.lib.util.AbstractIOIOActivity.IOIOThread#loop()} method, which gets called
+ * repetitively as long as the IOIO is connected. Both methods should access the
+ * {@link ioio.lib.util.AbstractIOIOActivity.IOIOThread#ioio_} field for controlling the IOIO.
+ * 
+ * In addition, the {@link ioio.lib.util.AbstractIOIOActivity.IOIOThread#disconnected()}
+ * method may be overridden in order to execute logic as soon as a disconnection
+ * occurs for whichever reason. The
+ * {@link ioio.lib.util.AbstractIOIOActivity.IOIOThread#incompatible()} method may be
+ * overridden in order to take action in case where a IOIO whose firmware is
+ * incompatible with the IOIOLib version that application is built with.
+ * 
+ * In a more advanced use case, more than one IOIO is available. In this case, a
+ * thread will be created for each IOIO, whose semantics are as defined above.
+ * If the client needs to be able to distinguish between them, it is possible to
+ * override {@link #createIOIOThread(String, Object)} instead of
+ * {@link #createIOIOThread()}. The first argument provided will contain the
+ * connection class name, such as ioio.lib.impl.SocketIOIOConnection for a
+ * connection established over a TCP socket (which is used over ADB). The second
+ * argument will contain information specific to the connection type. For
+ * example, in the case of SocketIOIOConnection, the second argument will
+ * contain an {@link Integer} representing the local port number.
+ * 
+ * @deprecated Please use {@link ioio.lib.util.android.IOIOActivity} instead.
+ */
+public abstract class AbstractIOIOActivity extends Activity {
+	private static final String TAG = "AbstractIOIOActivity";
 
-    private void abortAllThreads() {
-        Iterator iterator = this.threads_.iterator();
-        while (iterator.hasNext()) {
-            ((IOIOThread)((Object)iterator.next())).abort();
-        }
-        return;
-    }
+	static {
+		IOIOConnectionRegistry
+				.addBootstraps(new String[] {
+						"ioio.lib.android.accessory.AccessoryConnectionBootstrap",
+						"ioio.lib.android.bluetooth.BluetoothIOIOConnectionBootstrap" });
+	}
 
-    private void createAllThreads() {
-        this.threads_.clear();
-        Iterator iterator = IOIOConnectionRegistry.getConnectionFactories().iterator();
-        while (iterator.hasNext()) {
-            IOIOConnectionFactory iOIOConnectionFactory;
-            this.currentConnectionFactory_ = iOIOConnectionFactory = (IOIOConnectionFactory)iterator.next();
-            IOIOThread iOIOThread = this.createIOIOThread(iOIOConnectionFactory.getType(), iOIOConnectionFactory.getExtra());
-            if (iOIOThread == null) continue;
-            this.threads_.add((Object)iOIOThread);
-        }
-        return;
-    }
+	private Collection<IOIOThread> threads_ = new LinkedList<IOIOThread>();
+	private Collection<IOIOConnectionBootstrap> bootstraps_ = IOIOConnectionRegistry
+			.getBootstraps();
+	private IOIOConnectionFactory currentConnectionFactory_;
 
-    private void joinAllThreads() throws InterruptedException {
-        Iterator iterator = this.threads_.iterator();
-        while (iterator.hasNext()) {
-            ((IOIOThread)((Object)iterator.next())).join();
-        }
-        return;
-    }
+	/**
+	 * Subclasses should call this method from their own onCreate() if
+	 * overloaded. It takes care of connecting with the IOIO.
+	 */
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		for (IOIOConnectionBootstrap bootstrap : bootstraps_) {
+			if (bootstrap instanceof ContextWrapperDependent) {
+				((ContextWrapperDependent) bootstrap).onCreate(this);
+			}
+		}
+	}
 
-    private void startAllThreads() {
-        Iterator iterator = this.threads_.iterator();
-        while (iterator.hasNext()) {
-            ((IOIOThread)((Object)iterator.next())).start();
-        }
-        return;
-    }
+	/**
+	 * Subclasses should call this method from their own onDestroy() if
+	 * overloaded. It takes care of connecting with the IOIO.
+	 */
+	@Override
+	protected void onDestroy() {
+		for (IOIOConnectionBootstrap bootstrap : bootstraps_) {
+			if (bootstrap instanceof ContextWrapperDependent) {
+				((ContextWrapperDependent) bootstrap).onDestroy();
+			}
+		}
+		super.onDestroy();
+	}
 
-    protected IOIOThread createIOIOThread() {
-        throw new RuntimeException("Client must override on of the createIOIOThread overloads!");
-    }
+	/**
+	 * Subclasses should call this method from their own onStart() if
+	 * overloaded. It takes care of connecting with the IOIO.
+	 */
+	@Override
+	protected void onStart() {
+		super.onStart();
+		for (IOIOConnectionBootstrap bootstrap : bootstraps_) {
+			if (bootstrap instanceof ContextWrapperDependent) {
+				((ContextWrapperDependent) bootstrap).open();
+			}
+		}
+		createAllThreads();
+		startAllThreads();
+	}
 
-    protected IOIOThread createIOIOThread(String string2, Object object) {
-        return this.createIOIOThread();
-    }
+	/**
+	 * Subclasses should call this method from their own onStop() if overloaded.
+	 * It takes care of disconnecting from the IOIO.
+	 */
+	@Override
+	protected void onStop() {
+		abortAllThreads();
+		try {
+			joinAllThreads();
+		} catch (InterruptedException e) {
+		}
+		for (IOIOConnectionBootstrap bootstrap : bootstraps_) {
+			if (bootstrap instanceof ContextWrapperDependent) {
+				((ContextWrapperDependent) bootstrap).close();
+			}
+		}
+		super.onStop();
+	}
 
-    protected void onCreate(Bundle bundle) {
-        super.onCreate(bundle);
-        Iterator iterator = this.bootstraps_.iterator();
-        while (iterator.hasNext()) {
-            IOIOConnectionBootstrap iOIOConnectionBootstrap = (IOIOConnectionBootstrap)iterator.next();
-            if (!(iOIOConnectionBootstrap instanceof ContextWrapperDependent)) continue;
-            ((ContextWrapperDependent)((Object)iOIOConnectionBootstrap)).onCreate((ContextWrapper)this);
-        }
-        return;
-    }
+	@Override
+	protected void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+		if ((intent.getFlags() & Intent.FLAG_ACTIVITY_NEW_TASK) != 0) {
+			for (IOIOConnectionBootstrap bootstrap : bootstraps_) {
+				if (bootstrap instanceof ContextWrapperDependent) {
+					((ContextWrapperDependent) bootstrap).open();
+				}
+			}
+		}
+	}
 
-    protected void onDestroy() {
-        Iterator iterator = this.bootstraps_.iterator();
-        do {
-            if (!iterator.hasNext()) {
-                super.onDestroy();
-                return;
-            }
-            IOIOConnectionBootstrap iOIOConnectionBootstrap = (IOIOConnectionBootstrap)iterator.next();
-            if (!(iOIOConnectionBootstrap instanceof ContextWrapperDependent)) continue;
-            ((ContextWrapperDependent)((Object)iOIOConnectionBootstrap)).onDestroy();
-        } while (true);
-    }
+	/**
+	 * Subclasses must either implement this method or its other overload by
+	 * returning a concrete subclass of {@link ioio.lib.util.AbstractIOIOActivity.IOIOThread}. <code>null</code>
+	 * may be returned if the client is not interested to create a thread for
+	 * this IOIO. In multi-IOIO scenarios, where you want to identify which IOIO
+	 * the thread is for, consider using {@link #createIOIOThread()} instead.
+	 * 
+	 * @return An implementation of {@link ioio.lib.util.AbstractIOIOActivity.IOIOThread}, or <code>null</code> to
+	 *         skip.
+	 */
+	protected IOIOThread createIOIOThread() {
+		throw new RuntimeException(
+				"Client must override on of the createIOIOThread overloads!");
+	}
 
-    /*
-     * Enabled force condition propagation
-     * Lifted jumps to return sites
-     */
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        if ((268435456 & intent.getFlags()) == 0) return;
-        Iterator iterator = this.bootstraps_.iterator();
-        while (iterator.hasNext()) {
-            IOIOConnectionBootstrap iOIOConnectionBootstrap = (IOIOConnectionBootstrap)iterator.next();
-            if (!(iOIOConnectionBootstrap instanceof ContextWrapperDependent)) continue;
-            ((ContextWrapperDependent)((Object)iOIOConnectionBootstrap)).open();
-        }
-        return;
-    }
+	/**
+	 * Subclasses should implement this method by returning a concrete subclass
+	 * of {@link ioio.lib.util.AbstractIOIOActivity.IOIOThread}. This overload is useful in multi-IOIO scenarios,
+	 * where you want to identify which IOIO the thread is for. The provided
+	 * arguments should provide enough information to be unique per connection.
+	 * <code>null</code> may be returned if the client is not interested to
+	 * connect a thread for this IOIO. This can be used in order to filter out
+	 * unwanted connections, for example if the application is only intended for
+	 * wireless connection, any wired connection attempts may be rejected, thus
+	 * saving resources used for listening for incoming wired connections.
+	 * 
+	 * @param connectionType
+	 *            A unique name of the connection type. Typically, the
+	 *            fully-qualified name of the connection class used to connect
+	 *            to the IOIO.
+	 * @param extra
+	 *            A connection-type-specific object with extra information on
+	 *            the specific connection. Should provide information that
+	 *            enables distinguishing between different IOIO instances using
+	 *            the same connection class. For example, a Bluetooth connection
+	 *            type, might have the remote IOIO's Bluetooth name as extra.
+	 * 
+	 * @return An implementation of {@link ioio.lib.util.AbstractIOIOActivity.IOIOThread}, or <code>null</code> to
+	 *         skip.
+	 */
+	protected IOIOThread createIOIOThread(String connectionType, Object extra) {
+		return createIOIOThread();
+	}
 
-    protected void onStart() {
-        super.onStart();
-        Iterator iterator = this.bootstraps_.iterator();
-        do {
-            if (!iterator.hasNext()) {
-                this.createAllThreads();
-                this.startAllThreads();
-                return;
-            }
-            IOIOConnectionBootstrap iOIOConnectionBootstrap = (IOIOConnectionBootstrap)iterator.next();
-            if (!(iOIOConnectionBootstrap instanceof ContextWrapperDependent)) continue;
-            ((ContextWrapperDependent)((Object)iOIOConnectionBootstrap)).open();
-        } while (true);
-    }
+	/**
+	 * An abstract class, which facilitates a thread dedicated for communication
+	 * with a single physical IOIO device.
+	 */
+	protected abstract class IOIOThread extends Thread {
+		/** Subclasses should use this field for controlling the IOIO. */
+		protected IOIO ioio_;
+		private boolean abort_ = false;
+		private boolean connected_ = true;
+		private final IOIOConnectionFactory connectionFactory_ = currentConnectionFactory_;
 
-    /*
-     * Unable to fully structure code
-     * Enabled aggressive exception aggregation
-     */
-    protected void onStop() {
-        this.abortAllThreads();
-        try {
-            this.joinAllThreads();
-        }
-        catch (InterruptedException var1_1) {
-            ** continue;
-        }
-lbl4: // 2 sources:
-        do {
-            var2_2 = this.bootstraps_.iterator();
-            do {
-                if (!var2_2.hasNext()) {
-                    super.onStop();
-                    return;
-                }
-                var3_3 = (IOIOConnectionBootstrap)var2_2.next();
-                if (!(var3_3 instanceof ContextWrapperDependent)) continue;
-                ((ContextWrapperDependent)var3_3).close();
-            } while (true);
-            break;
-        } while (true);
-    }
+		/**
+		 * Subclasses should override this method for performing operations to
+		 * be done once as soon as IOIO communication is established. Typically,
+		 * this will include opening pins and modules using the openXXX()
+		 * methods of the {@link #ioio_} field.
+		 */
+		protected void setup() throws ConnectionLostException,
+				InterruptedException {
+		}
 
-    protected abstract class IOIOThread
-    extends Thread {
-        private boolean abort_;
-        private boolean connected_;
-        private final IOIOConnectionFactory connectionFactory_;
-        protected IOIO ioio_;
+		/**
+		 * Subclasses should override this method for performing operations to
+		 * be done repetitively as long as IOIO communication persists.
+		 * Typically, this will be the main logic of the application, processing
+		 * inputs and producing outputs.
+		 */
+		protected void loop() throws ConnectionLostException,
+				InterruptedException {
+			sleep(100000);
+		}
 
-        protected IOIOThread() {
-            this.abort_ = false;
-            this.connected_ = true;
-            this.connectionFactory_ = AbstractIOIOActivity.this.currentConnectionFactory_;
-        }
+		/**
+		 * Subclasses should override this method for performing operations to
+		 * be done once as soon as IOIO communication is lost or closed.
+		 * Typically, this will include GUI changes corresponding to the change.
+		 * This method will only be called if setup() has been called. The
+		 * {@link #ioio_} member must not be used from within this method. This
+		 * method should not block for long, since it may cause an ANR.
+		 */
+		protected void disconnected() {
+		}
 
-        public final void abort() {
-            IOIOThread iOIOThread = this;
-            synchronized (iOIOThread) {
-                this.abort_ = true;
-                if (this.ioio_ != null) {
-                    this.ioio_.disconnect();
-                }
-                if (this.connected_) {
-                    this.interrupt();
-                }
-                return;
-            }
-        }
+		/**
+		 * Subclasses should override this method for performing operations to
+		 * be done if an incompatible IOIO firmware is detected. The
+		 * {@link #ioio_} member must not be used from within this method. This
+		 * method will only be called once, until a compatible IOIO is connected
+		 * (i.e. {@link #setup()} gets called).
+		 */
+		protected void incompatible() {
+		}
 
-        protected void disconnected() {
-        }
+		/** Not relevant to subclasses. */
+		@Override
+		public final void run() {
+			super.run();
+			while (!abort_) {
+				try {
+					synchronized (this) {
+						if (abort_) {
+							break;
+						}
+						ioio_ = IOIOFactory.create(connectionFactory_
+								.createConnection());
+					}
+				} catch (Exception e) {
+					Log.e(TAG, "Failed to create IOIO, aborting IOIOThread!");
+					return;
+				}
+				// if we got here, we have a ioio_!
+				try {
+					ioio_.waitForConnect();
+					connected_ = true;
+					setup();
+					while (!abort_) {
+						loop();
+					}
+				} catch (ConnectionLostException e) {
+				} catch (InterruptedException e) {
+					ioio_.disconnect();
+				} catch (IncompatibilityException e) {
+					Log.e(TAG, "Incompatible IOIO firmware", e);
+					incompatible();
+					// nothing to do - just wait until physical disconnection
+				} catch (Exception e) {
+					Log.e(TAG, "Unexpected exception caught", e);
+					ioio_.disconnect();
+					break;
+				} finally {
+					try {
+						ioio_.waitForDisconnect();
+					} catch (InterruptedException e1) {
+					}
+					synchronized (this) {
+						ioio_ = null;
+					}
+					if (connected_) {
+						disconnected();
+						connected_ = false;
+					}
+				}
+			}
+			Log.d(TAG, "IOIOThread is exiting");
+		}
 
-        protected void incompatible() {
-        }
+		/** Not relevant to subclasses. */
+		public synchronized final void abort() {
+			abort_ = true;
+			if (ioio_ != null) {
+				ioio_.disconnect();
+			}
+			if (connected_) {
+				interrupt();
+			}
+		}
+	}
 
-        protected void loop() throws ConnectionLostException, InterruptedException {
-            IOIOThread.sleep((long)100000);
-        }
+	private void abortAllThreads() {
+		for (IOIOThread thread : threads_) {
+			thread.abort();
+		}
+	}
 
-        /*
-         * Exception decompiling
-         */
-        public final void run() {
-            // This method has failed to decompile.  When submitting a bug report, please provide this stack trace, and (if you hold appropriate legal rights) the relevant class file.
-            // org.benf.cfr.reader.util.ConfusedCFRException: Tried to end blocks [4[TRYBLOCK]], but top level block is 48[UNCONDITIONALDOLOOP]
-            // org.benf.cfr.reader.bytecode.analysis.opgraph.Op04StructuredStatement.processEndingBlocks(Op04StructuredStatement.java:394)
-            // org.benf.cfr.reader.bytecode.analysis.opgraph.Op04StructuredStatement.buildNestedBlocks(Op04StructuredStatement.java:446)
-            // org.benf.cfr.reader.bytecode.analysis.opgraph.Op03SimpleStatement.createInitialStructuredBlock(Op03SimpleStatement.java:2859)
-            // org.benf.cfr.reader.bytecode.CodeAnalyser.getAnalysisInner(CodeAnalyser.java:805)
-            // org.benf.cfr.reader.bytecode.CodeAnalyser.getAnalysisOrWrapFail(CodeAnalyser.java:220)
-            // org.benf.cfr.reader.bytecode.CodeAnalyser.getAnalysis(CodeAnalyser.java:165)
-            // org.benf.cfr.reader.entities.attributes.AttributeCode.analyse(AttributeCode.java:91)
-            // org.benf.cfr.reader.entities.Method.analyse(Method.java:354)
-            // org.benf.cfr.reader.entities.ClassFile.analyseMid(ClassFile.java:751)
-            // org.benf.cfr.reader.entities.ClassFile.analyseInnerClassesPass1(ClassFile.java:664)
-            // org.benf.cfr.reader.entities.ClassFile.analyseMid(ClassFile.java:747)
-            // org.benf.cfr.reader.entities.ClassFile.analyseTop(ClassFile.java:683)
-            // org.benf.cfr.reader.Main.doJar(Main.java:128)
-            // com.njlabs.showjava.processor.JavaExtractor$1.run(JavaExtractor.java:100)
-            // java.lang.Thread.run(Thread.java:818)
-            throw new IllegalStateException("Decompilation failed");
-        }
+	private void joinAllThreads() throws InterruptedException {
+		for (IOIOThread thread : threads_) {
+			thread.join();
+		}
+	}
 
-        protected void setup() throws ConnectionLostException, InterruptedException {
-        }
-    }
+	private void createAllThreads() {
+		threads_.clear();
+		Collection<IOIOConnectionFactory> factories = IOIOConnectionRegistry
+				.getConnectionFactories();
+		for (IOIOConnectionFactory factory : factories) {
+			currentConnectionFactory_ = factory;
+			IOIOThread thread = createIOIOThread(factory.getType(),
+					factory.getExtra());
+			if (thread != null) {
+				threads_.add(thread);
+			}
+		}
+	}
+
+	private void startAllThreads() {
+		for (IOIOThread thread : threads_) {
+			thread.start();
+		}
+	}
 
 }
-

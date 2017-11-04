@@ -1,235 +1,179 @@
 /*
- * Decompiled with CFR 0_110.
+ * Copyright 2011 Ytai Ben-Tsvi. All rights reserved.
+ *  
  * 
- * Could not load the following classes:
- *  java.io.IOException
- *  java.lang.AssertionError
- *  java.lang.IllegalStateException
- *  java.lang.InterruptedException
- *  java.lang.Object
- *  java.lang.String
+ * Redistribution and use in source and binary forms, with or without modification, are
+ * permitted provided that the following conditions are met:
+ * 
+ *    1. Redistributions of source code must retain the above copyright notice, this list of
+ *       conditions and the following disclaimer.
+ * 
+ *    2. Redistributions in binary form must reproduce the above copyright notice, this list
+ *       of conditions and the following disclaimer in the documentation and/or other materials
+ *       provided with the distribution.
+ * 
+ * THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+ * FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL ARSHAN POURSOHI OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+ * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * 
+ * The views and conclusions contained in the software and documentation are those of the
+ * authors and should not be interpreted as representing official policies, either expressed
+ * or implied.
  */
 package ioio.lib.impl;
 
 import ioio.lib.api.AnalogInput;
 import ioio.lib.api.exception.ConnectionLostException;
-import ioio.lib.impl.AbstractPin;
-import ioio.lib.impl.AbstractResource;
-import ioio.lib.impl.IOIOImpl;
-import ioio.lib.impl.IOIOProtocol;
-import ioio.lib.impl.IncomingState;
+import ioio.lib.impl.IncomingState.InputPinListener;
+
 import java.io.IOException;
 
-class AnalogInputImpl
-extends AbstractPin
-implements AnalogInput,
-IncomingState.InputPinListener {
-    static final /* synthetic */ boolean $assertionsDisabled;
-    int bufferCapacity_;
-    int bufferOverflowCount_ = 0;
-    int bufferReadCursor_;
-    int bufferSize_;
-    int bufferWriteCursor_;
-    short[] buffer_;
-    private boolean valid_ = false;
-    private int value_;
+class AnalogInputImpl extends AbstractPin implements AnalogInput,
+		InputPinListener {
+	private int value_;
+	private boolean valid_ = false;
 
-    /*
-     * Enabled aggressive block sorting
-     */
-    static {
-        boolean bl = !AnalogInputImpl.class.desiredAssertionStatus();
-        $assertionsDisabled = bl;
-    }
+	short[] buffer_;
+	int bufferSize_;
+	int bufferCapacity_;
+	int bufferReadCursor_;
+	int bufferWriteCursor_;
+	int bufferOverflowCount_ = 0;
 
-    AnalogInputImpl(IOIOImpl iOIOImpl, int n) throws ConnectionLostException {
-        super(iOIOImpl, n);
-    }
+	AnalogInputImpl(IOIOImpl ioio, int pin) throws ConnectionLostException {
+		super(ioio, pin);
+	}
 
-    /*
-     * Unable to fully structure code
-     * Enabled aggressive block sorting
-     * Enabled unnecessary exception pruning
-     * Enabled aggressive exception aggregation
-     * Converted monitor instructions to comments
-     * Lifted jumps to return sites
-     */
-    private short bufferPull() throws InterruptedException, ConnectionLostException {
-        var5_1 = this;
-        // MONITORENTER : var5_1
-        if (this.buffer_ != null) ** GOTO lbl6
-        throw new IllegalStateException("Need to call setBuffer() before reading buffered values.");
-lbl-1000: // 1 sources:
-        {
-            this.wait();
-lbl6: // 2 sources:
-            ** while (this.bufferSize_ == 0 && this.state_ == AbstractResource.State.OPEN)
-        }
-lbl7: // 1 sources:
-        this.checkState();
-        var2_2 = this.buffer_;
-        var3_3 = this.bufferReadCursor_;
-        this.bufferReadCursor_ = var3_3 + 1;
-        var4_4 = var2_2[var3_3];
-        if (this.bufferReadCursor_ == this.bufferCapacity_) {
-            this.bufferReadCursor_ = 0;
-        }
-        this.bufferSize_ = -1 + this.bufferSize_;
-        // MONITOREXIT : var5_1
-        return var4_4;
-    }
+	@Override
+	public float getVoltage() throws InterruptedException,
+			ConnectionLostException {
+		return read() * getReference();
+	}
 
-    /*
-     * Enabled aggressive block sorting
-     */
-    private void bufferPush(short s) {
-        if (this.buffer_ == null) {
-            return;
-        }
-        if (this.bufferSize_ == this.bufferCapacity_) {
-            this.bufferOverflowCount_ = 1 + this.bufferOverflowCount_;
-        } else {
-            this.bufferSize_ = 1 + this.bufferSize_;
-        }
-        short[] arrs = this.buffer_;
-        int n = this.bufferWriteCursor_;
-        this.bufferWriteCursor_ = n + 1;
-        arrs[n] = s;
-        if (this.bufferWriteCursor_ == this.bufferCapacity_) {
-            this.bufferWriteCursor_ = 0;
-        }
-        this.notifyAll();
-    }
+	@Override
+	public float getReference() {
+		return 3.3f;
+	}
 
-    @Override
-    public int available() throws ConnectionLostException {
-        return this.bufferSize_;
-    }
+	@Override
+	synchronized public void setValue(int value) {
+		// Log.v("AnalogInputImpl", "Pin " + pinNum_ + " value is " + value);
+		assert (value >= 0 && value < 1024);
+		value_ = value;
+		if (!valid_) {
+			valid_ = true;
+			notifyAll();
+		}
+		bufferPush((short) value);
+	}
 
-    /*
-     * Enabled aggressive block sorting
-     * Enabled unnecessary exception pruning
-     * Enabled aggressive exception aggregation
-     * Converted monitor instructions to comments
-     * Lifted jumps to return sites
-     */
-    @Override
-    public void close() {
-        AnalogInputImpl analogInputImpl = this;
-        // MONITORENTER : analogInputImpl
-        super.close();
-        try {
-            this.ioio_.protocol_.setAnalogInSampling(this.pinNum_, false);
-            // MONITOREXIT : analogInputImpl
-            return;
-        }
-        catch (IOException var2_2) {
-            return;
-        }
-    }
+	@Override
+	synchronized public float read() throws InterruptedException,
+			ConnectionLostException {
+		checkState();
+		while (!valid_ && state_ == State.OPEN) {
+			wait();
+		}
+		checkState();
+		return (float) value_ / 1023.0f;
+	}
 
-    @Override
-    public void disconnected() {
-        AnalogInputImpl analogInputImpl = this;
-        synchronized (analogInputImpl) {
-            super.disconnected();
-            this.notifyAll();
-            return;
-        }
-    }
+	@Override
+	public synchronized void disconnected() {
+		super.disconnected();
+		notifyAll();
+	}
 
-    @Override
-    public int getOverflowCount() throws ConnectionLostException {
-        return this.bufferOverflowCount_;
-    }
+	@Override
+	public synchronized void close() {
+		super.close();
+		try {
+			ioio_.protocol_.setAnalogInSampling(pinNum_, false);
+		} catch (IOException e) {
+		}
+	}
 
-    @Override
-    public float getReference() {
-        return 3.3f;
-    }
+	@Override
+	public synchronized void setBuffer(int capacity)
+			throws ConnectionLostException {
+		checkState();
+		if (capacity <= 0) {
+			buffer_ = null;
+		} else {
+			buffer_ = new short[capacity];
+		}
+		bufferCapacity_ = capacity;
+		bufferSize_ = 0;
+		bufferReadCursor_ = 0;
+		bufferWriteCursor_ = 0;
+		bufferOverflowCount_ = 0;
+	}
 
-    @Override
-    public float getSampleRate() throws ConnectionLostException {
-        return 1000.0f;
-    }
+	@Override
+	public float readBuffered() throws InterruptedException,
+			ConnectionLostException {
+		checkState();
+		return (float) bufferPull() / 1023.0f;
+	}
 
-    @Override
-    public float getVoltage() throws InterruptedException, ConnectionLostException {
-        return this.read() * this.getReference();
-    }
+	@Override
+	public float getVoltageBuffered() throws InterruptedException,
+			ConnectionLostException {
+		return readBuffered() * getReference();
+	}
 
-    @Override
-    public float getVoltageBuffered() throws InterruptedException, ConnectionLostException {
-        return this.readBuffered() * this.getReference();
-    }
+	private void bufferPush(short value) {
+		if (buffer_ == null) {
+			return;
+		}
+		if (bufferSize_ == bufferCapacity_) {
+			++bufferOverflowCount_;
+		} else {
+			++bufferSize_;
+		}
+		buffer_[bufferWriteCursor_++] = value;
+		if (bufferWriteCursor_ == bufferCapacity_) {
+			bufferWriteCursor_ = 0;
+		}
+		notifyAll();
+	}
 
-    /*
-     * Enabled aggressive block sorting
-     * Enabled unnecessary exception pruning
-     * Enabled aggressive exception aggregation
-     */
-    @Override
-    public float read() throws InterruptedException, ConnectionLostException {
-        AnalogInputImpl analogInputImpl = this;
-        synchronized (analogInputImpl) {
-            this.checkState();
-            do {
-                if (this.valid_ || this.state_ != AbstractResource.State.OPEN) {
-                    this.checkState();
-                    int n = this.value_;
-                    return (float)n / 1023.0f;
-                }
-                this.wait();
-            } while (true);
-        }
-    }
+	private synchronized short bufferPull() throws InterruptedException,
+			ConnectionLostException {
+		if (buffer_ == null) {
+			throw new IllegalStateException(
+					"Need to call setBuffer() before reading buffered values.");
+		}
+		while (bufferSize_ == 0 && state_ == State.OPEN) {
+			wait();
+		}
+		checkState();
+		short result = buffer_[bufferReadCursor_++];
+		if (bufferReadCursor_ == bufferCapacity_) {
+			bufferReadCursor_ = 0;
+		}
+		--bufferSize_;
+		return result;
+	}
 
-    @Override
-    public float readBuffered() throws InterruptedException, ConnectionLostException {
-        this.checkState();
-        return (float)this.bufferPull() / 1023.0f;
-    }
+	@Override
+	public int getOverflowCount() throws ConnectionLostException {
+		return bufferOverflowCount_;
+	}
 
-    /*
-     * Enabled aggressive block sorting
-     * Enabled unnecessary exception pruning
-     * Enabled aggressive exception aggregation
-     */
-    @Override
-    public void setBuffer(int n) throws ConnectionLostException {
-        void var3_2 = this;
-        synchronized (var3_2) {
-            this.checkState();
-            this.buffer_ = n <= 0 ? (Object)null : new short[n];
-            this.bufferCapacity_ = n;
-            this.bufferSize_ = 0;
-            this.bufferReadCursor_ = 0;
-            this.bufferWriteCursor_ = 0;
-            this.bufferOverflowCount_ = 0;
-            return;
-        }
-    }
+	@Override
+	public float getSampleRate() throws ConnectionLostException {
+		return 1000.0f;
+	}
 
-    /*
-     * Enabled aggressive block sorting
-     * Enabled unnecessary exception pruning
-     * Enabled aggressive exception aggregation
-     */
-    @Override
-    public void setValue(int n) {
-        void var3_2 = this;
-        synchronized (var3_2) {
-            if (!($assertionsDisabled || n >= 0 && n < 1024)) {
-                throw new AssertionError();
-            }
-            this.value_ = n;
-            if (!this.valid_) {
-                this.valid_ = true;
-                this.notifyAll();
-            }
-            super.bufferPush((short)n);
-            return;
-        }
-    }
+	@Override
+	public int available() throws ConnectionLostException {
+		return bufferSize_;
+	}
 }
-

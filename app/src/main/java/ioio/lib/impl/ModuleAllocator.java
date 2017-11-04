@@ -1,101 +1,106 @@
 /*
- * Decompiled with CFR 0_110.
+ * Copyright 2011 Ytai Ben-Tsvi. All rights reserved.
+ *  
  * 
- * Could not load the following classes:
- *  java.lang.IllegalArgumentException
- *  java.lang.Integer
- *  java.lang.Object
- *  java.lang.String
- *  java.util.ArrayList
- *  java.util.Collection
- *  java.util.HashSet
- *  java.util.Iterator
- *  java.util.Set
- *  java.util.TreeSet
+ * Redistribution and use in source and binary forms, with or without modification, are
+ * permitted provided that the following conditions are met:
+ * 
+ *    1. Redistributions of source code must retain the above copyright notice, this list of
+ *       conditions and the following disclaimer.
+ * 
+ *    2. Redistributions in binary form must reproduce the above copyright notice, this list
+ *       of conditions and the following disclaimer in the documentation and/or other materials
+ *       provided with the distribution.
+ * 
+ * THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+ * FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL ARSHAN POURSOHI OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+ * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * 
+ * The views and conclusions contained in the software and documentation are those of the
+ * authors and should not be interpreted as representing official policies, either expressed
+ * or implied.
  */
 package ioio.lib.impl;
 
 import ioio.lib.api.exception.OutOfResourceException;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+/**
+ * Utility to allocate and assign unique module ids.
+ * A module id is requested via {@link #allocateModule()}
+ * and released via {@link #releaseModule(int)}.
+ *
+ * @author birmiwal
+ */
 class ModuleAllocator {
-    private final Set<Integer> allocatedModuleIds_;
     private final Set<Integer> availableModuleIds_;
-    private final String name_;
+    private final Set<Integer> allocatedModuleIds_;
+	private final String name_;
 
-    public ModuleAllocator(int n, String string2) {
-        super(ModuleAllocator.getList(n), string2);
+    public ModuleAllocator(Collection<Integer> availableModuleIds, String name) {
+        this.availableModuleIds_ = new TreeSet<Integer>(availableModuleIds);
+        allocatedModuleIds_ = new HashSet<Integer>();
+        name_ = name;
     }
 
-    public ModuleAllocator(Collection<Integer> collection, String string2) {
-        this.availableModuleIds_ = new TreeSet(collection);
-        this.allocatedModuleIds_ = new HashSet();
-        this.name_ = string2;
+    public ModuleAllocator(int[] availableModuleIds, String name) {
+    	this(getList(availableModuleIds), name);
     }
 
-    public ModuleAllocator(int[] arrn, String string2) {
-        super(ModuleAllocator.getList(arrn), string2);
+    public ModuleAllocator(int maxModules, String name) {
+        this(getList(maxModules), name);
     }
 
-    private static Collection<Integer> getList(int n) {
-        ArrayList arrayList = new ArrayList();
-        int n2 = 0;
-        while (n2 < n) {
-            arrayList.add((Object)n2);
-            ++n2;
+    private static Collection<Integer> getList(int maxModules) {
+        List<Integer> availableModuleIds = new ArrayList<Integer>();
+        for (int i = 0; i < maxModules; i++) {
+            availableModuleIds.add(i);
         }
-        return arrayList;
+        return availableModuleIds;
     }
 
-    private static Collection<Integer> getList(int[] arrn) {
-        ArrayList arrayList = new ArrayList(arrn.length);
-        int n = arrn.length;
-        int n2 = 0;
-        while (n2 < n) {
-            arrayList.add((Object)arrn[n2]);
-            ++n2;
+    private static Collection<Integer> getList(int[] array) {
+        List<Integer> availableModuleIds = new ArrayList<Integer>(array.length);
+        for (int i : array) {
+            availableModuleIds.add(i);
         }
-        return arrayList;
+        return availableModuleIds;
     }
 
-    /*
-     * Enabled aggressive block sorting
-     * Enabled unnecessary exception pruning
-     * Enabled aggressive exception aggregation
+    /**
+     * @return a module id that was allocated, or {@code null} if nothing was available
      */
-    public Integer allocateModule() {
-        ModuleAllocator moduleAllocator = this;
-        synchronized (moduleAllocator) {
-            if (this.availableModuleIds_.isEmpty()) {
-                throw new OutOfResourceException("No more resources of the requested type: " + this.name_);
-            }
-            Integer n = (Integer)this.availableModuleIds_.iterator().next();
-            this.availableModuleIds_.remove((Object)n);
-            this.allocatedModuleIds_.add((Object)n);
-            return n;
+    public synchronized Integer allocateModule() {
+        if (availableModuleIds_.isEmpty()) {
+        	throw new OutOfResourceException("No more resources of the requested type: " + name_);
         }
+        Integer moduleId = availableModuleIds_.iterator().next();
+        availableModuleIds_.remove(moduleId);
+        allocatedModuleIds_.add(moduleId);
+        return moduleId;
     }
 
-    /*
-     * Enabled aggressive block sorting
-     * Enabled unnecessary exception pruning
-     * Enabled aggressive exception aggregation
+    /**
+     * @param moduleId the moduleId to be released; throws {@link IllegalArgumentException} if
+     *     a moduleId is re-returned, or an invalid moduleId is provided
      */
-    public void releaseModule(int n) {
-        void var5_2 = this;
-        synchronized (var5_2) {
-            if (!this.allocatedModuleIds_.contains((Object)n)) {
-                throw new IllegalArgumentException("moduleId: " + n + "; not yet allocated");
-            }
-            this.availableModuleIds_.add((Object)n);
-            this.allocatedModuleIds_.remove((Object)n);
-            return;
+    public synchronized void releaseModule(int moduleId) {
+        if (!allocatedModuleIds_.contains(moduleId)) {
+            throw new IllegalArgumentException("moduleId: " + moduleId+ "; not yet allocated");
         }
+        availableModuleIds_.add(moduleId);
+        allocatedModuleIds_.remove(moduleId);
     }
 }
-

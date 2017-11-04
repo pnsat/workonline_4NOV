@@ -1,108 +1,101 @@
 /*
- * Decompiled with CFR 0_110.
+ * Copyright 2011 Ytai Ben-Tsvi. All rights reserved.
+ *  
  * 
- * Could not load the following classes:
- *  java.io.IOException
- *  java.lang.AssertionError
- *  java.lang.Exception
+ * Redistribution and use in source and binary forms, with or without modification, are
+ * permitted provided that the following conditions are met:
+ * 
+ *    1. Redistributions of source code must retain the above copyright notice, this list of
+ *       conditions and the following disclaimer.
+ * 
+ *    2. Redistributions in binary form must reproduce the above copyright notice, this list
+ *       of conditions and the following disclaimer in the documentation and/or other materials
+ *       provided with the distribution.
+ * 
+ * THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+ * FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL ARSHAN POURSOHI OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+ * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * 
+ * The views and conclusions contained in the software and documentation are those of the
+ * authors and should not be interpreted as representing official policies, either expressed
+ * or implied.
  */
 package ioio.lib.impl;
 
 import ioio.lib.api.PwmOutput;
 import ioio.lib.api.exception.ConnectionLostException;
-import ioio.lib.impl.AbstractResource;
-import ioio.lib.impl.IOIOImpl;
-import ioio.lib.impl.IOIOProtocol;
+
 import java.io.IOException;
 
-class PwmImpl
-extends AbstractResource
-implements PwmOutput {
-    static final /* synthetic */ boolean $assertionsDisabled;
-    private final float baseUs_;
-    private final int period_;
-    private final int pinNum_;
-    private final int pwmNum_;
+class PwmImpl extends AbstractResource implements PwmOutput {
+	private final int pwmNum_;
+	private final int pinNum_;
+	private final float baseUs_;
+	private final int period_;
 
-    /*
-     * Enabled aggressive block sorting
-     */
-    static {
-        boolean bl = !PwmImpl.class.desiredAssertionStatus();
-        $assertionsDisabled = bl;
-    }
+	public PwmImpl(IOIOImpl ioio, int pinNum, int pwmNum, int period,
+			float baseUs) throws ConnectionLostException {
+		super(ioio);
+		pwmNum_ = pwmNum;
+		pinNum_ = pinNum;
+		baseUs_ = baseUs;
+		period_ = period;
+	}
 
-    public PwmImpl(IOIOImpl iOIOImpl, int n, int n2, int n3, float f) throws ConnectionLostException {
-        super(iOIOImpl);
-        this.pwmNum_ = n2;
-        this.pinNum_ = n;
-        this.baseUs_ = f;
-        this.period_ = n3;
-    }
+	@Override
+	public synchronized void close() {
+		super.close();
+		ioio_.closePwm(pwmNum_);
+		ioio_.closePin(pinNum_);
+	}
 
-    /*
-     * Enabled aggressive block sorting
-     * Enabled unnecessary exception pruning
-     * Enabled aggressive exception aggregation
-     */
-    private void setPulseWidthInClocks(float f) throws ConnectionLostException {
-        void var8_2 = this;
-        synchronized (var8_2) {
-            int n;
-            int n2;
-            float f2;
-            this.checkState();
-            if (f > (float)this.period_) {
-                int n3 = this.period_;
-                f = n3;
-            }
-            if ((f2 = f - 1.0f) < 1.0f) {
-                n = 0;
-                n2 = 0;
-            } else {
-                n = (int)f2;
-                n2 = 3 & 4 * (int)f2;
-            }
-            try {
-                this.ioio_.protocol_.setPwmDutyCycle(this.pwmNum_, n, n2);
-                return;
-            }
-            catch (IOException var6_7) {
-                throw new ConnectionLostException((Exception)var6_7);
-            }
-        }
-    }
+	@Override
+	public void setDutyCycle(float dutyCycle) throws ConnectionLostException {
+		assert (dutyCycle <= 1 && dutyCycle >= 0);
+		setPulseWidthInClocks(period_ * dutyCycle);
+	}
 
-    @Override
-    public void close() {
-        PwmImpl pwmImpl = this;
-        synchronized (pwmImpl) {
-            super.close();
-            this.ioio_.closePwm(this.pwmNum_);
-            this.ioio_.closePin(this.pinNum_);
-            return;
-        }
-    }
+	@Override
+	public void setPulseWidth(int pulseWidthUs) throws ConnectionLostException {
+		setPulseWidth((float) pulseWidthUs);
+	}
 
-    @Override
-    public void setDutyCycle(float f) throws ConnectionLostException {
-        if (!($assertionsDisabled || f <= 1.0f && f >= 0.0f)) {
-            throw new AssertionError();
-        }
-        super.setPulseWidthInClocks(f * (float)this.period_);
-    }
+	@Override
+	public void setPulseWidth(float pulseWidthUs)
+			throws ConnectionLostException {
+		assert (pulseWidthUs >= 0);
+		float p = pulseWidthUs / baseUs_;
+		setPulseWidthInClocks(p);
+	}
 
-    @Override
-    public void setPulseWidth(float f) throws ConnectionLostException {
-        if (!$assertionsDisabled && f < 0.0f) {
-            throw new AssertionError();
-        }
-        super.setPulseWidthInClocks(f / this.baseUs_);
-    }
-
-    @Override
-    public void setPulseWidth(int n) throws ConnectionLostException {
-        this.setPulseWidth((float)n);
-    }
+	synchronized private void setPulseWidthInClocks(float p)
+			throws ConnectionLostException {
+		checkState();
+		if (p > period_) {
+			p = period_;
+		}
+		int pw;
+		int fraction;
+		p -= 1; // period parameter is one less than the actual period length
+				// yes, there is 0 and then 2 (no 1) - this is not a bug, that
+				// is how the hardware PWM module works.
+		if (p < 1) {
+			pw = 0;
+			fraction = 0;
+		} else {
+			pw = (int) p;
+			fraction = ((int) p * 4) & 0x03;
+		}
+		try {
+			ioio_.protocol_.setPwmDutyCycle(pwmNum_, pw, fraction);
+		} catch (IOException e) {
+			throw new ConnectionLostException(e);
+		}
+	}
 }
-
